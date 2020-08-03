@@ -26,9 +26,29 @@ Or do a transect while walking to research sites.
 
 ## Links
 
+EpiConnect
+
+* https://five.epicollect.net/project/test-trillium
+
+Data sources
+
 * Lots of climate data. https://writingfornature.wordpress.com/links-to-interesting-blogs/weather-and-climate-resources/
-* Background article https://academic.oup.com/bioscience/article/69/7/544/5505326
-* Packages
-    * biomod2
-    * Wallace
+* https://www.earthenv.org/
+
+* Background
+    * article https://academic.oup.com/bioscience/article/69/7/544/5505326
     
+* Packages
+    * [biomod2](http://www.will.chez-alice.fr/Software.html)
+    * Wallace
+* https://www.inaturalist.org/
+
+Spatial data in R
+
+* https://rspatial.org/raster/index.html
+* http://spatialecology.weebly.com/r-code--data/category/gbif
+* https://datacarpentry.org/r-raster-vector-geospatial/07-vector-shapefile-attributes-in-r/
+
+Hubbard Brook
+
+* https://www.caryinstitute.org/science/research-projects/hubbard-brook-ecosystem-study
