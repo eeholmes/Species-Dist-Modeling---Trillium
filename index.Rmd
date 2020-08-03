@@ -20,14 +20,29 @@ knitr::opts_chunk$set(echo = TRUE, comment=NA, tidy.opts=list(width.cutoff=60), 
 
 # Overview {-}
 
-This an example of building a species distribution model.
+A project to learn how to do species distribution modeling (SDM) in R. Ultimately, I'll use the biomod2 package but in the learning phase, I am running models without it.
 
-## Set-up
+<p align="center">
+  <img src="images/logo.png" />
+</p>
+
+
+## Set-up - R and RStudio
 
 If you have not updated R recently (in the last 6 months), go ahead and do that. Also update RStudio is you haven't done that recently.
 
-The code will use the following R packages which you should install. 
-```{r}
+* Download R [here](https://cran.r-project.org/)
+* Download RStudio [here](https://rstudio.com/products/rstudio/download/)
+
+## Get the shapefiles for Hubbard Brook
+
+Create a project in RStudio for the SDM building. Within that project, create a folder called `data` and one called `code`. Within `data` create a folder called `hbef_boundary`. Go to the [Species-Dist-Modeling---Trillium](https://github.com/eeholmes/Species-Dist-Modeling---Trillium/tree/master/data/hbef_boundary) repository `hbef_boundary` folder and download all the files there into your `hbef_boundary` folder.
+
+## Set-up - R packages
+
+The code will use the following R packages which you will need to install. Open RStudio and go to the Packages tab on the right. Then click Install and search for the package.
+
+```{r message=FALSE, warning=FALSE}
 library(biomod2)
 library(dismo)
 library(sp)
@@ -44,6 +59,10 @@ library(tidyr) # for data wrangling for ggplot
 library(knitr) # for R Markdown
 library(here) # for intelligent file directory navigation
 ```
+
+## Data downloads
+
+When you go through the Rmd files, it will download a lot of data into your project, but the next time you run the files, the code will look for the downloaded files and not rerun the downloads.
 
 ```{r include=FALSE}
 # automatically create a bib database for R packages

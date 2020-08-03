@@ -7,9 +7,7 @@ This example will use the following libraries:
 ```{r}
 library(dismo)
 library(sp)
-library(raster)
-library(maps)
-library(stringr)
+library(here)
 ```
 
 Load the shapefiles created earlier.

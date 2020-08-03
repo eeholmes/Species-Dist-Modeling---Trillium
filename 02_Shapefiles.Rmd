@@ -6,7 +6,6 @@ The first step is to define the spatial extent of the area you will be working w
 library(sp)
 library(raster)
 library(maps)
-library(stringr)
 ```
 
 ## Create the boundary box

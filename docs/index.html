@@ -167,8 +167,69 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="overview" class="section level1 unnumbered">
 <h1>Overview</h1>
-<p>This an example of building a species distribution model.</p>
+<p>A project to learn how to do species distribution modeling (SDM) in R. Ultimately, I’ll use the biomod2 package but in the learning phase, I am running models without it.</p>
+<p align="center">
+<img src="images/logo.png" />
+</p>
+<div id="set-up" class="section level2">
+<h2><span class="header-section-number">0.1</span> Set-up</h2>
+<p>If you have not updated R recently (in the last 6 months), go ahead and do that. Also update RStudio is you haven’t done that recently.</p>
+<p>The code will use the following R packages which you should install.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1"></a><span class="kw">library</span>(biomod2)</span></code></pre></div>
+<pre><code>biomod2 3.4.6 loaded.
 
+Type browseVignettes(package=&#39;biomod2&#39;) to access directly biomod2 vignettes.</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1"></a><span class="kw">library</span>(dismo)</span></code></pre></div>
+<pre><code>Loading required package: raster</code></pre>
+<pre><code>Loading required package: sp</code></pre>
+<pre><code>
+Attaching package: &#39;dismo&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:biomod2&#39;:
+
+    evaluate</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="index.html#cb8-1"></a><span class="kw">library</span>(sp)</span>
+<span id="cb8-2"><a href="index.html#cb8-2"></a><span class="kw">library</span>(raster)</span>
+<span id="cb8-3"><a href="index.html#cb8-3"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb8-4"><a href="index.html#cb8-4"></a><span class="kw">library</span>(maps)</span>
+<span id="cb8-5"><a href="index.html#cb8-5"></a><span class="kw">library</span>(usdm)</span>
+<span id="cb8-6"><a href="index.html#cb8-6"></a><span class="kw">library</span>(ecospat)</span></code></pre></div>
+<pre><code>Loading required package: ade4</code></pre>
+<pre><code>Loading required package: ape</code></pre>
+<pre><code>
+Attaching package: &#39;ape&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:raster&#39;:
+
+    rotate, zoom</code></pre>
+<pre><code>Loading required package: gbm</code></pre>
+<pre><code>Loaded gbm 2.1.8</code></pre>
+<pre><code>Registered S3 methods overwritten by &#39;adehabitatMA&#39;:
+  method                       from
+  print.SpatialPixelsDataFrame sp  
+  print.SpatialPixels          sp  </code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="index.html#cb16-1"></a><span class="kw">library</span>(corrplot)</span></code></pre></div>
+<pre><code>corrplot 0.84 loaded</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="index.html#cb18-1"></a><span class="kw">library</span>(MASS)</span></code></pre></div>
+<pre><code>
+Attaching package: &#39;MASS&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:raster&#39;:
+
+    area, select</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="index.html#cb21-1"></a><span class="kw">library</span>(gam)</span></code></pre></div>
+<pre><code>Loading required package: splines</code></pre>
+<pre><code>Loading required package: foreach</code></pre>
+<pre><code>Loaded gam 1.16.1</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="index.html#cb25-1"></a><span class="kw">library</span>(stringr)  <span class="co"># for easy string manipulation</span></span>
+<span id="cb25-2"><a href="index.html#cb25-2"></a><span class="kw">library</span>(tidyr)  <span class="co"># for data wrangling for ggplot</span></span></code></pre></div>
+<pre><code>
+Attaching package: &#39;tidyr&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:raster&#39;:
+
+    extract</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="index.html#cb28-1"></a><span class="kw">library</span>(knitr)  <span class="co"># for R Markdown</span></span>
+<span id="cb28-2"><a href="index.html#cb28-2"></a><span class="kw">library</span>(here)  <span class="co"># for intelligent file directory navigation</span></span></code></pre></div>
+<pre><code>here() starts at /Users/eli.holmes/Documents/GitHub/Species Dist Modeling - Trillium</code></pre>
+
+</div>
 </div>
             </section>
 
