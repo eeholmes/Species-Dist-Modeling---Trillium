@@ -163,62 +163,61 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="shape-files" class="section level1">
 <h1><span class="header-section-number">Chapter 2</span> Shape files</h1>
 <p>The first step is to define the spatial extent of the area you will be working with and set up any shape files you need to plot boundaries or polygons or mask out areas.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="shape-files.html#cb1-1"></a><span class="kw">library</span>(sp)</span>
-<span id="cb1-2"><a href="shape-files.html#cb1-2"></a><span class="kw">library</span>(raster)</span>
-<span id="cb1-3"><a href="shape-files.html#cb1-3"></a><span class="kw">library</span>(maps)</span>
-<span id="cb1-4"><a href="shape-files.html#cb1-4"></a><span class="kw">library</span>(stringr)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="shape-files.html#cb2-1"></a><span class="kw">library</span>(sp)</span>
+<span id="cb2-2"><a href="shape-files.html#cb2-2"></a><span class="kw">library</span>(raster)</span>
+<span id="cb2-3"><a href="shape-files.html#cb2-3"></a><span class="kw">library</span>(maps)</span></code></pre></div>
 <div id="create-the-boundary-box" class="section level2">
 <h2><span class="header-section-number">2.1</span> Create the boundary box</h2>
 <p>First I need to define an <code>raster::extent</code> object for a box bounding NH and VT. This will be used to crop the data that we download. I can get a bounding box dynamically using <code>drawExtent()</code>. Click twice (upper corner/lower corner) on the map to select the region of interest. Don’t go too far outside the lines.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="shape-files.html#cb2-1"></a>maps<span class="op">::</span><span class="kw">map</span>(<span class="st">&quot;state&quot;</span>, <span class="dt">region =</span> <span class="kw">c</span>(<span class="st">&quot;new hampshire&quot;</span>, <span class="st">&quot;vermont&quot;</span>, <span class="st">&quot;new york&quot;</span>, </span>
-<span id="cb2-2"><a href="shape-files.html#cb2-2"></a>    <span class="st">&quot;massachusetts&quot;</span>))</span>
-<span id="cb2-3"><a href="shape-files.html#cb2-3"></a>NHVT &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">drawExtent</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="shape-files.html#cb3-1"></a>maps<span class="op">::</span><span class="kw">map</span>(<span class="st">&quot;state&quot;</span>, <span class="dt">region =</span> <span class="kw">c</span>(<span class="st">&quot;new hampshire&quot;</span>, <span class="st">&quot;vermont&quot;</span>, <span class="st">&quot;new york&quot;</span>, </span>
+<span id="cb3-2"><a href="shape-files.html#cb3-2"></a>    <span class="st">&quot;massachusetts&quot;</span>))</span>
+<span id="cb3-3"><a href="shape-files.html#cb3-3"></a>NHVT &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">drawExtent</span>()</span></code></pre></div>
 <p>or I can use longitude/latitude values for the box and use <code>extent()</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="shape-files.html#cb3-1"></a>NHVT &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">extent</span>(<span class="op">-</span><span class="fl">73.61056</span>, <span class="fl">-70.60205</span>, <span class="fl">42.48873</span>, <span class="fl">45.37969</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="shape-files.html#cb4-1"></a>NHVT &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">extent</span>(<span class="op">-</span><span class="fl">73.61056</span>, <span class="fl">-70.60205</span>, <span class="fl">42.48873</span>, <span class="fl">45.37969</span>)</span></code></pre></div>
 </div>
 <div id="get-the-states-shapefile" class="section level2">
 <h2><span class="header-section-number">2.2</span> Get the states shapefile</h2>
 <p>I download the shapefile for the NH and VT state borders using <code>getData()</code> which gives polygons for countries. Level 1 will be the state boundaries (I assume). The shape file has all the states. Then I use <code>subset()</code> to get the two states that I want. <code>path</code> says where to save the downloaded file.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="shape-files.html#cb4-1"></a>usashp &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">getData</span>(<span class="st">&quot;GADM&quot;</span>, <span class="dt">country =</span> <span class="st">&quot;USA&quot;</span>, <span class="dt">level =</span> <span class="dv">1</span>, </span>
-<span id="cb4-2"><a href="shape-files.html#cb4-2"></a>    <span class="dt">path =</span> <span class="st">&quot;data&quot;</span>)</span>
-<span id="cb4-3"><a href="shape-files.html#cb4-3"></a>nhvtshp &lt;-<span class="st"> </span><span class="kw">subset</span>(usashp, NAME_<span class="dv">1</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;New Hampshire&quot;</span>, <span class="st">&quot;Vermont&quot;</span>))</span>
-<span id="cb4-4"><a href="shape-files.html#cb4-4"></a>nhshp &lt;-<span class="st"> </span><span class="kw">subset</span>(usashp, NAME_<span class="dv">1</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;New Hampshire&quot;</span>))</span>
-<span id="cb4-5"><a href="shape-files.html#cb4-5"></a>vtshp &lt;-<span class="st"> </span><span class="kw">subset</span>(usashp, NAME_<span class="dv">1</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Vermont&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="shape-files.html#cb5-1"></a>usashp &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">getData</span>(<span class="st">&quot;GADM&quot;</span>, <span class="dt">country =</span> <span class="st">&quot;USA&quot;</span>, <span class="dt">level =</span> <span class="dv">1</span>, </span>
+<span id="cb5-2"><a href="shape-files.html#cb5-2"></a>    <span class="dt">path =</span> <span class="st">&quot;data&quot;</span>)</span>
+<span id="cb5-3"><a href="shape-files.html#cb5-3"></a>nhvtshp &lt;-<span class="st"> </span><span class="kw">subset</span>(usashp, NAME_<span class="dv">1</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;New Hampshire&quot;</span>, <span class="st">&quot;Vermont&quot;</span>))</span>
+<span id="cb5-4"><a href="shape-files.html#cb5-4"></a>nhshp &lt;-<span class="st"> </span><span class="kw">subset</span>(usashp, NAME_<span class="dv">1</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;New Hampshire&quot;</span>))</span>
+<span id="cb5-5"><a href="shape-files.html#cb5-5"></a>vtshp &lt;-<span class="st"> </span><span class="kw">subset</span>(usashp, NAME_<span class="dv">1</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Vermont&quot;</span>))</span></code></pre></div>
 <p>Check the projection for this shapefile:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="shape-files.html#cb5-1"></a><span class="kw">crs</span>(nhvtshp)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="shape-files.html#cb6-1"></a><span class="kw">crs</span>(nhvtshp)</span></code></pre></div>
 <pre><code>CRS arguments:
  +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 </code></pre>
 <p>I can plot the shapes.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="shape-files.html#cb7-1"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">axes =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
-<p><img src="sdm-demo_files/figure-html/unnamed-chunk-7-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="shape-files.html#cb8-1"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">axes =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-8-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="get-the-hubbard-brook-boundary" class="section level2">
 <h2><span class="header-section-number">2.3</span> Get the Hubbard Brook boundary</h2>
 <p>I downloaded this shapefile separately and read it in. This will get the boundary of the Hubbard Brook Experimental Forest from a shapefile. Although I write “shapefile” singular, it is actually two files, the shapefile and some metafiles. If you look in the <code>hbef_boundary</code> folder you’ll the metafiles.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="shape-files.html#cb8-1"></a>hbshp &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">shapefile</span>(<span class="st">&quot;data/hbef_boundary/hbef_boundary.shp&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="shape-files.html#cb9-1"></a>hbshp &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">shapefile</span>(<span class="st">&quot;data/hbef_boundary/hbef_boundary.shp&quot;</span>)</span></code></pre></div>
 <p>I check its projection and note that it is different from the NH+VT shapefile.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="shape-files.html#cb9-1"></a><span class="kw">crs</span>(hbshp)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="shape-files.html#cb10-1"></a><span class="kw">crs</span>(hbshp)</span></code></pre></div>
 <pre><code>CRS arguments:
  +proj=utm +zone=19 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m
 +no_defs </code></pre>
 <p>I transform the shapefile to get it on the same projection.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="shape-files.html#cb11-1"></a>newcrs &lt;-<span class="st"> </span><span class="kw">crs</span>(nhvtshp)</span>
-<span id="cb11-2"><a href="shape-files.html#cb11-2"></a>hbshp &lt;-<span class="st"> </span>sp<span class="op">::</span><span class="kw">spTransform</span>(hbshp, newcrs)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="shape-files.html#cb12-1"></a>newcrs &lt;-<span class="st"> </span><span class="kw">crs</span>(nhvtshp)</span>
+<span id="cb12-2"><a href="shape-files.html#cb12-2"></a>hbshp &lt;-<span class="st"> </span>sp<span class="op">::</span><span class="kw">spTransform</span>(hbshp, newcrs)</span></code></pre></div>
 <p>Plot it.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="shape-files.html#cb12-1"></a><span class="kw">plot</span>(hbshp)</span></code></pre></div>
-<p><img src="sdm-demo_files/figure-html/unnamed-chunk-11-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="shape-files.html#cb13-1"></a><span class="kw">plot</span>(hbshp)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-12-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="plot-the-boundaries-together" class="section level2">
 <h2><span class="header-section-number">2.4</span> Plot the boundaries together</h2>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="shape-files.html#cb13-1"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">axes =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb13-2"><a href="shape-files.html#cb13-2"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb13-3"><a href="shape-files.html#cb13-3"></a><span class="kw">text</span>(<span class="op">-</span><span class="fl">71.8</span>, <span class="dv">44</span>, <span class="st">&quot;HBEF&quot;</span>, <span class="dt">pos =</span> <span class="dv">4</span>)</span></code></pre></div>
-<p><img src="sdm-demo_files/figure-html/unnamed-chunk-12-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="shape-files.html#cb14-1"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">axes =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb14-2"><a href="shape-files.html#cb14-2"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb14-3"><a href="shape-files.html#cb14-3"></a><span class="kw">text</span>(<span class="op">-</span><span class="fl">71.8</span>, <span class="dv">44</span>, <span class="st">&quot;HBEF&quot;</span>, <span class="dt">pos =</span> <span class="dv">4</span>)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-13-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="save" class="section level2">
 <h2><span class="header-section-number">2.5</span> Save</h2>
 <p>I save the shapefile data to a file so I can use it later without rerunning this code.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="shape-files.html#cb14-1"></a><span class="kw">save</span>(nhvtshp, hbshp, nhshp, vtshp, NHVT, <span class="dt">file =</span> <span class="st">&quot;data/shapefiles.RData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="shape-files.html#cb15-1"></a><span class="kw">save</span>(nhvtshp, hbshp, nhshp, vtshp, NHVT, <span class="dt">file =</span> <span class="st">&quot;data/shapefiles.RData&quot;</span>)</span></code></pre></div>
 
 </div>
 </div>

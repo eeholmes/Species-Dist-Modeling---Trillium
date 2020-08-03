@@ -166,29 +166,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="set-up" class="section level2">
 <h2><span class="header-section-number">4.1</span> Set-up</h2>
 <p>This chapter will use the following libraries. These must be loaded for the code in this chapter to work. I’ve used <code>::</code> to clarify what functions are associated with what packages, but still the packages must be loaded to do any plotting.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="variables.html#cb32-1"></a><span class="kw">library</span>(sp)</span>
-<span id="cb32-2"><a href="variables.html#cb32-2"></a><span class="kw">library</span>(raster)</span>
-<span id="cb32-3"><a href="variables.html#cb32-3"></a><span class="kw">library</span>(stringr)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="variables.html#cb33-1"></a><span class="kw">library</span>(sp)</span>
+<span id="cb33-2"><a href="variables.html#cb33-2"></a><span class="kw">library</span>(raster)</span>
+<span id="cb33-3"><a href="variables.html#cb33-3"></a><span class="kw">library</span>(stringr)</span></code></pre></div>
 <p>I need to load in the shapefile data from Chapter 1.</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="variables.html#cb33-1"></a><span class="kw">load</span>(<span class="st">&quot;data/shapefiles.RData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="variables.html#cb34-1"></a><span class="kw">load</span>(<span class="st">&quot;data/shapefiles.RData&quot;</span>)</span></code></pre></div>
 <p>I have found that when working with large raster layers that RStudio can sometimes get very slow. In that case a call to the “garbage collection” <code>gc()</code> function to clear out temporary memory can help. If it doesn’t then going to the Tools tab and restarting R will help. The latter will get rid of any variables in your working directory so make sure anything you need is saved.</p>
 </div>
 <div id="climatic-data" class="section level2">
 <h2><span class="header-section-number">4.2</span> Climatic data</h2>
 <p>I will use the <code>getData</code> function from the <code>raster</code> package to get climate data. I will retrieve global bioclimatic variables at 0.5’ (1km) resolution from <a href="http://www.worldclim.org">WorldClim</a>. This returns <a href="https://www.worldclim.org/data/bioclim.html">19 bioclimatic variables</a>. For the 0.5’ resolution, I need to give it a center longitude and latitude and then it returns data centered on that in a 30 degrees longitude and latitude box. This is 300+ Mb but it will check if the directory exists and won’t keep re downloading if you re-run the code. <code>path</code> tells it where to save the downloaded directory (which will be called <code>wc0.5</code>).</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="variables.html#cb34-1"></a>bioclimVars &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">getData</span>(<span class="dt">name =</span> <span class="st">&quot;worldclim&quot;</span>, <span class="dt">res =</span> <span class="fl">0.5</span>, </span>
-<span id="cb34-2"><a href="variables.html#cb34-2"></a>    <span class="dt">var =</span> <span class="st">&quot;bio&quot;</span>, <span class="dt">lon =</span> <span class="kw">mean</span>(NHVT[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]), <span class="dt">lat =</span> <span class="kw">mean</span>(NHVT[<span class="dv">3</span><span class="op">:</span><span class="dv">4</span>]), </span>
-<span id="cb34-3"><a href="variables.html#cb34-3"></a>    <span class="dt">path =</span> <span class="st">&quot;data&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="variables.html#cb35-1"></a>bioclimVars &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">getData</span>(<span class="dt">name =</span> <span class="st">&quot;worldclim&quot;</span>, <span class="dt">res =</span> <span class="fl">0.5</span>, </span>
+<span id="cb35-2"><a href="variables.html#cb35-2"></a>    <span class="dt">var =</span> <span class="st">&quot;bio&quot;</span>, <span class="dt">lon =</span> <span class="kw">mean</span>(NHVT[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]), <span class="dt">lat =</span> <span class="kw">mean</span>(NHVT[<span class="dv">3</span><span class="op">:</span><span class="dv">4</span>]), </span>
+<span id="cb35-3"><a href="variables.html#cb35-3"></a>    <span class="dt">path =</span> <span class="st">&quot;data&quot;</span>)</span></code></pre></div>
 <p><code>bioclimVars</code> is a raster stack.</p>
 <pre><code>class(bioclimVars)</code></pre>
 <p>A raster stack is collection of many raster layers with the same projection, spatial extent and resolution. I don’t know why <code>_13</code> is appended to the bioclim names by <code>getData()</code>.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="variables.html#cb36-1"></a>raster<span class="op">::</span><span class="kw">extent</span>(bioclimVars)  <span class="co"># lons are x and lats are y</span></span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="variables.html#cb37-1"></a>raster<span class="op">::</span><span class="kw">extent</span>(bioclimVars)  <span class="co"># lons are x and lats are y</span></span></code></pre></div>
 <pre><code>class      : Extent 
 xmin       : -90 
 xmax       : -60 
 ymin       : 30 
 ymax       : 60 </code></pre>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="variables.html#cb38-1"></a><span class="kw">names</span>(bioclimVars)  <span class="co"># look at the variable names</span></span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="variables.html#cb39-1"></a><span class="kw">names</span>(bioclimVars)  <span class="co"># look at the variable names</span></span></code></pre></div>
 <pre><code> [1] &quot;bio1_13&quot;  &quot;bio2_13&quot;  &quot;bio3_13&quot;  &quot;bio4_13&quot;  &quot;bio5_13&quot;  &quot;bio6_13&quot; 
  [7] &quot;bio7_13&quot;  &quot;bio8_13&quot;  &quot;bio9_13&quot;  &quot;bio10_13&quot; &quot;bio11_13&quot; &quot;bio12_13&quot;
 [13] &quot;bio13_13&quot; &quot;bio14_13&quot; &quot;bio15_13&quot; &quot;bio16_13&quot; &quot;bio17_13&quot; &quot;bio18_13&quot;
@@ -196,146 +196,146 @@ ymax       : 60 </code></pre>
 <div id="crop-and-subset" class="section level3">
 <h3><span class="header-section-number">4.2.1</span> Crop and subset</h3>
 <p>I will crop down this raster stack to the NH+VT bounding box.</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="variables.html#cb40-1"></a>NHVTVars &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">crop</span>(bioclimVars, NHVT)</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="variables.html#cb41-1"></a>NHVTVars &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">crop</span>(bioclimVars, NHVT)</span></code></pre></div>
 <p>Here I will plot just 3 of these variables.</p>
 <ul>
 <li>BIO10 = Mean Temperature of Warmest Quarter</li>
 <li>BIO15 = Precipitation Seasonality (how much precipitation varies during year)</li>
 <li>BIO19 = Precipitation of Coldest Quarter</li>
 </ul>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="variables.html#cb41-1"></a>sub.NHVTVars &lt;-<span class="st"> </span><span class="kw">subset</span>(NHVTVars, <span class="kw">c</span>(<span class="st">&quot;bio10_13&quot;</span>, <span class="st">&quot;bio15_13&quot;</span>, <span class="st">&quot;bio19_13&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="variables.html#cb42-1"></a>sub.NHVTVars &lt;-<span class="st"> </span><span class="kw">subset</span>(NHVTVars, <span class="kw">c</span>(<span class="st">&quot;bio10_13&quot;</span>, <span class="st">&quot;bio15_13&quot;</span>, <span class="st">&quot;bio19_13&quot;</span>))</span></code></pre></div>
 <p>Plot these three variables. This takes awhile. Note <code>bio10_13</code> is mean temperature times 10. That’s how GBIF records temperature.</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="variables.html#cb42-1"></a><span class="kw">plot</span>(sub.NHVTVars)</span></code></pre></div>
-<p><img src="sdm-demo_files/figure-html/unnamed-chunk-32-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="variables.html#cb43-1"></a><span class="kw">plot</span>(sub.NHVTVars)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-33-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>Another why to make this stack is to read in the data from the downloaded files in <code>dir("wc0.5")</code>. Downloaded in <code>.bil</code> format and comprised of two files.</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="variables.html#cb43-1"></a>fils &lt;-<span class="st"> </span><span class="kw">dir</span>(<span class="st">&quot;data/wc0.5&quot;</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb43-2"><a href="variables.html#cb43-2"></a>fils &lt;-<span class="st"> </span>fils[stringr<span class="op">::</span><span class="kw">str_detect</span>(fils, <span class="st">&quot;bil&quot;</span>)]</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="variables.html#cb44-1"></a>fils &lt;-<span class="st"> </span><span class="kw">dir</span>(<span class="st">&quot;data/wc0.5&quot;</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb44-2"><a href="variables.html#cb44-2"></a>fils &lt;-<span class="st"> </span>fils[stringr<span class="op">::</span><span class="kw">str_detect</span>(fils, <span class="st">&quot;bil&quot;</span>)]</span></code></pre></div>
 <p>Plot one layer.</p>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="variables.html#cb44-1"></a>onelayer &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">raster</span>(fils[<span class="dv">1</span>])</span>
-<span id="cb44-2"><a href="variables.html#cb44-2"></a><span class="kw">plot</span>(onelayer, <span class="dt">xlim =</span> NHVT[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>], <span class="dt">ylim =</span> NHVT[<span class="dv">3</span><span class="op">:</span><span class="dv">4</span>])</span>
-<span id="cb44-3"><a href="variables.html#cb44-3"></a><span class="co"># Add the NH VT lines on top</span></span>
-<span id="cb44-4"><a href="variables.html#cb44-4"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>)</span>
-<span id="cb44-5"><a href="variables.html#cb44-5"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb44-6"><a href="variables.html#cb44-6"></a><span class="kw">title</span>(<span class="kw">names</span>(onelayer))</span></code></pre></div>
-<p><img src="sdm-demo_files/figure-html/unnamed-chunk-34-1.png" width="80%" style="display: block; margin: auto;" />
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="variables.html#cb45-1"></a>onelayer &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">raster</span>(fils[<span class="dv">1</span>])</span>
+<span id="cb45-2"><a href="variables.html#cb45-2"></a><span class="kw">plot</span>(onelayer, <span class="dt">xlim =</span> NHVT[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>], <span class="dt">ylim =</span> NHVT[<span class="dv">3</span><span class="op">:</span><span class="dv">4</span>])</span>
+<span id="cb45-3"><a href="variables.html#cb45-3"></a><span class="co"># Add the NH VT lines on top</span></span>
+<span id="cb45-4"><a href="variables.html#cb45-4"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb45-5"><a href="variables.html#cb45-5"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb45-6"><a href="variables.html#cb45-6"></a><span class="kw">title</span>(<span class="kw">names</span>(onelayer))</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-35-1.png" width="80%" style="display: block; margin: auto;" />
 You can create a stack from the file names and then crop to the NH+VT bounding box.</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="variables.html#cb45-1"></a><span class="co"># But for some reason when it reads in the bil file, it is</span></span>
-<span id="cb45-2"><a href="variables.html#cb45-2"></a><span class="co"># not setting the projection from the header file. So I&#39;ll</span></span>
-<span id="cb45-3"><a href="variables.html#cb45-3"></a><span class="co"># use the</span></span>
-<span id="cb45-4"><a href="variables.html#cb45-4"></a>NHVTVars &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">stack</span>(fils)</span>
-<span id="cb45-5"><a href="variables.html#cb45-5"></a>NHVTVars &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">crop</span>(NHVTVars, NHVT)</span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="variables.html#cb46-1"></a><span class="co"># But for some reason when it reads in the bil file, it is</span></span>
+<span id="cb46-2"><a href="variables.html#cb46-2"></a><span class="co"># not setting the projection from the header file. So I&#39;ll</span></span>
+<span id="cb46-3"><a href="variables.html#cb46-3"></a><span class="co"># use the</span></span>
+<span id="cb46-4"><a href="variables.html#cb46-4"></a>NHVTVars &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">stack</span>(fils)</span>
+<span id="cb46-5"><a href="variables.html#cb46-5"></a>NHVTVars &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">crop</span>(NHVTVars, NHVT)</span></code></pre></div>
 </div>
 <div id="bioclim-names" class="section level3">
 <h3><span class="header-section-number">4.2.2</span> Bioclim names</h3>
 <p>I want to make a data frame to use to get the descriptions for the variables. I made this by looking at the WorldClim website. <code>name</code> is the name of the variable in the downloaded data, <code>desc</code> is a description, <code>col</code> is what I will call the column.</p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="variables.html#cb46-1"></a>bioclimnames &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">name =</span> <span class="kw">paste0</span>(<span class="st">&quot;bio&quot;</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">19</span>, <span class="st">&quot;_13&quot;</span>), </span>
-<span id="cb46-2"><a href="variables.html#cb46-2"></a>    <span class="dt">desc =</span> <span class="kw">c</span>(<span class="st">&quot;Mean annual temperature&quot;</span>, <span class="st">&quot;Mean diurnal range (mean of max temp - min temp)&quot;</span>, </span>
-<span id="cb46-3"><a href="variables.html#cb46-3"></a>        <span class="st">&quot;Isothermality (bio2/bio7) (* 100)&quot;</span>, <span class="st">&quot;Temperature seasonality (standard deviation *100)&quot;</span>, </span>
-<span id="cb46-4"><a href="variables.html#cb46-4"></a>        <span class="st">&quot;Max temperature of warmest month&quot;</span>, <span class="st">&quot;Min temperature of coldest month&quot;</span>, </span>
-<span id="cb46-5"><a href="variables.html#cb46-5"></a>        <span class="st">&quot;Temperature annual range (bio5-bio6)&quot;</span>, <span class="st">&quot;Mean temperature of the wettest quarter&quot;</span>, </span>
-<span id="cb46-6"><a href="variables.html#cb46-6"></a>        <span class="st">&quot;Mean temperature of driest quarter&quot;</span>, <span class="st">&quot;Mean temperature of warmest quarter&quot;</span>, </span>
-<span id="cb46-7"><a href="variables.html#cb46-7"></a>        <span class="st">&quot;Mean temperature of coldest quarter&quot;</span>, <span class="st">&quot;Total (annual) precipitation&quot;</span>, </span>
-<span id="cb46-8"><a href="variables.html#cb46-8"></a>        <span class="st">&quot;Precipitation of wettest month&quot;</span>, <span class="st">&quot;Precipitation of driest month&quot;</span>, </span>
-<span id="cb46-9"><a href="variables.html#cb46-9"></a>        <span class="st">&quot;Precipitation seasonality (coefficient of variation)&quot;</span>, </span>
-<span id="cb46-10"><a href="variables.html#cb46-10"></a>        <span class="st">&quot;Precipitation of wettest quarter&quot;</span>, <span class="st">&quot;Precipitation of driest quarter&quot;</span>, </span>
-<span id="cb46-11"><a href="variables.html#cb46-11"></a>        <span class="st">&quot;Precipitation of warmest quarter&quot;</span>, <span class="st">&quot;Precipitation of coldest quarter&quot;</span>), </span>
-<span id="cb46-12"><a href="variables.html#cb46-12"></a>    <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;mean.temp&quot;</span>, <span class="st">&quot;temp.diurnal.range&quot;</span>, <span class="st">&quot;isotherm&quot;</span>, <span class="st">&quot;temp.seasonality&quot;</span>, </span>
-<span id="cb46-13"><a href="variables.html#cb46-13"></a>        <span class="st">&quot;max.warm.temp&quot;</span>, <span class="st">&quot;min.cold.temp&quot;</span>, <span class="st">&quot;temp.annual.range&quot;</span>, </span>
-<span id="cb46-14"><a href="variables.html#cb46-14"></a>        <span class="st">&quot;mean.temp.wet.qtr&quot;</span>, <span class="st">&quot;mean.temp.dry.qtr&quot;</span>, <span class="st">&quot;mean.temp.warm.qtr&quot;</span>, </span>
-<span id="cb46-15"><a href="variables.html#cb46-15"></a>        <span class="st">&quot;mean.temp.cold.qtr&quot;</span>, <span class="st">&quot;total.precip&quot;</span>, <span class="st">&quot;precip.wet.month&quot;</span>, </span>
-<span id="cb46-16"><a href="variables.html#cb46-16"></a>        <span class="st">&quot;precip.dry.month&quot;</span>, <span class="st">&quot;precip.seasonality&quot;</span>, <span class="st">&quot;precip.wet.qtr&quot;</span>, </span>
-<span id="cb46-17"><a href="variables.html#cb46-17"></a>        <span class="st">&quot;precip.dry.qtr&quot;</span>, <span class="st">&quot;precip.warm.qtr&quot;</span>, <span class="st">&quot;precip.cold.qtr&quot;</span>), </span>
-<span id="cb46-18"><a href="variables.html#cb46-18"></a>    <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="variables.html#cb47-1"></a>bioclimnames &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">name =</span> <span class="kw">paste0</span>(<span class="st">&quot;bio&quot;</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">19</span>, <span class="st">&quot;_13&quot;</span>), </span>
+<span id="cb47-2"><a href="variables.html#cb47-2"></a>    <span class="dt">desc =</span> <span class="kw">c</span>(<span class="st">&quot;Mean annual temperature&quot;</span>, <span class="st">&quot;Mean diurnal range (mean of max temp - min temp)&quot;</span>, </span>
+<span id="cb47-3"><a href="variables.html#cb47-3"></a>        <span class="st">&quot;Isothermality (bio2/bio7) (* 100)&quot;</span>, <span class="st">&quot;Temperature seasonality (standard deviation *100)&quot;</span>, </span>
+<span id="cb47-4"><a href="variables.html#cb47-4"></a>        <span class="st">&quot;Max temperature of warmest month&quot;</span>, <span class="st">&quot;Min temperature of coldest month&quot;</span>, </span>
+<span id="cb47-5"><a href="variables.html#cb47-5"></a>        <span class="st">&quot;Temperature annual range (bio5-bio6)&quot;</span>, <span class="st">&quot;Mean temperature of the wettest quarter&quot;</span>, </span>
+<span id="cb47-6"><a href="variables.html#cb47-6"></a>        <span class="st">&quot;Mean temperature of driest quarter&quot;</span>, <span class="st">&quot;Mean temperature of warmest quarter&quot;</span>, </span>
+<span id="cb47-7"><a href="variables.html#cb47-7"></a>        <span class="st">&quot;Mean temperature of coldest quarter&quot;</span>, <span class="st">&quot;Total (annual) precipitation&quot;</span>, </span>
+<span id="cb47-8"><a href="variables.html#cb47-8"></a>        <span class="st">&quot;Precipitation of wettest month&quot;</span>, <span class="st">&quot;Precipitation of driest month&quot;</span>, </span>
+<span id="cb47-9"><a href="variables.html#cb47-9"></a>        <span class="st">&quot;Precipitation seasonality (coefficient of variation)&quot;</span>, </span>
+<span id="cb47-10"><a href="variables.html#cb47-10"></a>        <span class="st">&quot;Precipitation of wettest quarter&quot;</span>, <span class="st">&quot;Precipitation of driest quarter&quot;</span>, </span>
+<span id="cb47-11"><a href="variables.html#cb47-11"></a>        <span class="st">&quot;Precipitation of warmest quarter&quot;</span>, <span class="st">&quot;Precipitation of coldest quarter&quot;</span>), </span>
+<span id="cb47-12"><a href="variables.html#cb47-12"></a>    <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;mean.temp&quot;</span>, <span class="st">&quot;temp.diurnal.range&quot;</span>, <span class="st">&quot;isotherm&quot;</span>, <span class="st">&quot;temp.seasonality&quot;</span>, </span>
+<span id="cb47-13"><a href="variables.html#cb47-13"></a>        <span class="st">&quot;max.warm.temp&quot;</span>, <span class="st">&quot;min.cold.temp&quot;</span>, <span class="st">&quot;temp.annual.range&quot;</span>, </span>
+<span id="cb47-14"><a href="variables.html#cb47-14"></a>        <span class="st">&quot;mean.temp.wet.qtr&quot;</span>, <span class="st">&quot;mean.temp.dry.qtr&quot;</span>, <span class="st">&quot;mean.temp.warm.qtr&quot;</span>, </span>
+<span id="cb47-15"><a href="variables.html#cb47-15"></a>        <span class="st">&quot;mean.temp.cold.qtr&quot;</span>, <span class="st">&quot;total.precip&quot;</span>, <span class="st">&quot;precip.wet.month&quot;</span>, </span>
+<span id="cb47-16"><a href="variables.html#cb47-16"></a>        <span class="st">&quot;precip.dry.month&quot;</span>, <span class="st">&quot;precip.seasonality&quot;</span>, <span class="st">&quot;precip.wet.qtr&quot;</span>, </span>
+<span id="cb47-17"><a href="variables.html#cb47-17"></a>        <span class="st">&quot;precip.dry.qtr&quot;</span>, <span class="st">&quot;precip.warm.qtr&quot;</span>, <span class="st">&quot;precip.cold.qtr&quot;</span>), </span>
+<span id="cb47-18"><a href="variables.html#cb47-18"></a>    <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
 <p>Do some memory clean-up before moving on.</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="variables.html#cb47-1"></a><span class="kw">gc</span>()</span></code></pre></div>
-<pre><code>          used (Mb) gc trigger  (Mb) limit (Mb) max used  (Mb)
-Ncells 1857365 99.2    3524704 188.3         NA  3524704 188.3
-Vcells 7055591 53.9   14867321 113.5      16384 14864751 113.5</code></pre>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="variables.html#cb48-1"></a><span class="kw">gc</span>()</span></code></pre></div>
+<pre><code>           used  (Mb) gc trigger  (Mb) limit (Mb) max used  (Mb)
+Ncells  4212149 225.0    7809614 417.1         NA  7682964 410.4
+Vcells 10724507  81.9   20675542 157.8      16384 20674844 157.8</code></pre>
 </div>
 </div>
 <div id="topographical-data" class="section level2">
 <h2><span class="header-section-number">4.3</span> Topographical data</h2>
 <p>I can read in elevation data with <code>getData()</code>. For USA, this returns a list of 4 raster layers. List 1 is mainland. Then I crop to my NHVT bounding box. I don’t need to re-download the data if I already have it. <code>path</code> is the folder where the downloaded data will be stored. <code>mask=FALSE</code> means don’t cut off the elevation data at the US-Canada border. The <code>USAelevation</code> object is about 80MB. That is not needed so you might not want to save that file.</p>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="variables.html#cb49-1"></a>dirPath &lt;-<span class="st"> &quot;data/elevation&quot;</span></span>
-<span id="cb49-2"><a href="variables.html#cb49-2"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">dir.exists</span>(dirPath)) <span class="kw">dir.create</span>(dirPath)</span>
-<span id="cb49-3"><a href="variables.html#cb49-3"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">file.exists</span>(<span class="st">&quot;data/NHVTelevation.grd&quot;</span>)) {</span>
-<span id="cb49-4"><a href="variables.html#cb49-4"></a>    USAelevation &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">getData</span>(<span class="st">&quot;alt&quot;</span>, <span class="dt">country =</span> <span class="st">&quot;USA&quot;</span>, <span class="dt">path =</span> <span class="st">&quot;data/elevation&quot;</span>, </span>
-<span id="cb49-5"><a href="variables.html#cb49-5"></a>        <span class="dt">mask =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb49-6"><a href="variables.html#cb49-6"></a>    raster<span class="op">::</span><span class="kw">writeRaster</span>(USAelevation[[<span class="dv">1</span>]], <span class="dt">filename =</span> <span class="st">&quot;data/USAelevation.grd&quot;</span>, </span>
-<span id="cb49-7"><a href="variables.html#cb49-7"></a>        <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb49-8"><a href="variables.html#cb49-8"></a>    NHVT.elevation &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">crop</span>(USAelevation[[<span class="dv">1</span>]], NHVT)</span>
-<span id="cb49-9"><a href="variables.html#cb49-9"></a>    raster<span class="op">::</span><span class="kw">writeRaster</span>(NHVT.elevation, <span class="dt">filename =</span> <span class="st">&quot;data/NHVTelevation.grd&quot;</span>, </span>
-<span id="cb49-10"><a href="variables.html#cb49-10"></a>        <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb49-11"><a href="variables.html#cb49-11"></a>} <span class="cf">else</span> {</span>
-<span id="cb49-12"><a href="variables.html#cb49-12"></a>    NHVT.elevation &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">raster</span>(<span class="st">&quot;data/NHVTelevation.grd&quot;</span>)</span>
-<span id="cb49-13"><a href="variables.html#cb49-13"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="variables.html#cb50-1"></a>dirPath &lt;-<span class="st"> &quot;data/elevation&quot;</span></span>
+<span id="cb50-2"><a href="variables.html#cb50-2"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">dir.exists</span>(dirPath)) <span class="kw">dir.create</span>(dirPath)</span>
+<span id="cb50-3"><a href="variables.html#cb50-3"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">file.exists</span>(<span class="st">&quot;data/NHVTelevation.grd&quot;</span>)) {</span>
+<span id="cb50-4"><a href="variables.html#cb50-4"></a>    USAelevation &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">getData</span>(<span class="st">&quot;alt&quot;</span>, <span class="dt">country =</span> <span class="st">&quot;USA&quot;</span>, <span class="dt">path =</span> <span class="st">&quot;data/elevation&quot;</span>, </span>
+<span id="cb50-5"><a href="variables.html#cb50-5"></a>        <span class="dt">mask =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb50-6"><a href="variables.html#cb50-6"></a>    raster<span class="op">::</span><span class="kw">writeRaster</span>(USAelevation[[<span class="dv">1</span>]], <span class="dt">filename =</span> <span class="st">&quot;data/USAelevation.grd&quot;</span>, </span>
+<span id="cb50-7"><a href="variables.html#cb50-7"></a>        <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb50-8"><a href="variables.html#cb50-8"></a>    NHVT.elevation &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">crop</span>(USAelevation[[<span class="dv">1</span>]], NHVT)</span>
+<span id="cb50-9"><a href="variables.html#cb50-9"></a>    raster<span class="op">::</span><span class="kw">writeRaster</span>(NHVT.elevation, <span class="dt">filename =</span> <span class="st">&quot;data/NHVTelevation.grd&quot;</span>, </span>
+<span id="cb50-10"><a href="variables.html#cb50-10"></a>        <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb50-11"><a href="variables.html#cb50-11"></a>} <span class="cf">else</span> {</span>
+<span id="cb50-12"><a href="variables.html#cb50-12"></a>    NHVT.elevation &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">raster</span>(<span class="st">&quot;data/NHVTelevation.grd&quot;</span>)</span>
+<span id="cb50-13"><a href="variables.html#cb50-13"></a>}</span></code></pre></div>
 <p>The plot of raw elevation is not so pretty. Later we will use the <code>hillshade()</code> function to make a nicer plot of elevation.</p>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="variables.html#cb50-1"></a><span class="kw">plot</span>(NHVT.elevation, <span class="dt">axes =</span> <span class="ot">TRUE</span>, <span class="dt">legend.args =</span> <span class="kw">list</span>(<span class="dt">text =</span> <span class="st">&quot;elevation (m)&quot;</span>, </span>
-<span id="cb50-2"><a href="variables.html#cb50-2"></a>    <span class="dt">adj =</span> <span class="fl">0.2</span>))</span></code></pre></div>
-<p><img src="sdm-demo_files/figure-html/unnamed-chunk-39-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="variables.html#cb51-1"></a><span class="kw">plot</span>(NHVT.elevation, <span class="dt">axes =</span> <span class="ot">TRUE</span>, <span class="dt">legend.args =</span> <span class="kw">list</span>(<span class="dt">text =</span> <span class="st">&quot;elevation (m)&quot;</span>, </span>
+<span id="cb51-2"><a href="variables.html#cb51-2"></a>    <span class="dt">adj =</span> <span class="fl">0.2</span>))</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-40-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <div id="slope-and-aspect" class="section level3">
 <h3><span class="header-section-number">4.3.1</span> Slope and aspect</h3>
 <p>The <code>terrain()</code> function will return the slope and aspect from an elevation layer.</p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="variables.html#cb51-1"></a>NHVT.slope &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">terrain</span>(NHVT.elevation, <span class="dt">opt =</span> <span class="st">&quot;slope&quot;</span>)</span>
-<span id="cb51-2"><a href="variables.html#cb51-2"></a>NHVT.aspect &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">terrain</span>(NHVT.elevation, <span class="dt">opt =</span> <span class="st">&quot;aspect&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="variables.html#cb52-1"></a>NHVT.slope &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">terrain</span>(NHVT.elevation, <span class="dt">opt =</span> <span class="st">&quot;slope&quot;</span>)</span>
+<span id="cb52-2"><a href="variables.html#cb52-2"></a>NHVT.aspect &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">terrain</span>(NHVT.elevation, <span class="dt">opt =</span> <span class="st">&quot;aspect&quot;</span>)</span></code></pre></div>
 <p>Plot of aspect.</p>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="variables.html#cb52-1"></a><span class="kw">plot</span>(NHVT.aspect)</span>
-<span id="cb52-2"><a href="variables.html#cb52-2"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
-<p><img src="sdm-demo_files/figure-html/unnamed-chunk-41-1.png" width="80%" style="display: block; margin: auto;" /></p>
-<p>There is also a <code>hillShade()</code> function that makes a prettier elevation plot than the elevation data alone.</p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="variables.html#cb53-1"></a>hill &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">hillShade</span>(NHVT.slope, NHVT.aspect, <span class="dv">40</span>, <span class="dv">270</span>)</span>
-<span id="cb53-2"><a href="variables.html#cb53-2"></a><span class="kw">plot</span>(hill, <span class="dt">col =</span> <span class="kw">grey</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">100</span><span class="op">/</span><span class="dv">100</span>), <span class="dt">legend =</span> <span class="ot">FALSE</span>, <span class="dt">main =</span> <span class="st">&quot;NH and VT elevation&quot;</span>)</span>
-<span id="cb53-3"><a href="variables.html#cb53-3"></a><span class="kw">plot</span>(NHVT.elevation, <span class="dt">col =</span> <span class="kw">rainbow</span>(<span class="dv">25</span>, <span class="dt">alpha =</span> <span class="fl">0.35</span>), <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb53-4"><a href="variables.html#cb53-4"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb53-5"><a href="variables.html#cb53-5"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="variables.html#cb53-1"></a><span class="kw">plot</span>(NHVT.aspect)</span>
+<span id="cb53-2"><a href="variables.html#cb53-2"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 <p><img src="sdm-demo_files/figure-html/unnamed-chunk-42-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>There is also a <code>hillShade()</code> function that makes a prettier elevation plot than the elevation data alone.</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="variables.html#cb54-1"></a>hill &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">hillShade</span>(NHVT.slope, NHVT.aspect, <span class="dv">40</span>, <span class="dv">270</span>)</span>
+<span id="cb54-2"><a href="variables.html#cb54-2"></a><span class="kw">plot</span>(hill, <span class="dt">col =</span> <span class="kw">grey</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">100</span><span class="op">/</span><span class="dv">100</span>), <span class="dt">legend =</span> <span class="ot">FALSE</span>, <span class="dt">main =</span> <span class="st">&quot;NH and VT elevation&quot;</span>)</span>
+<span id="cb54-3"><a href="variables.html#cb54-3"></a><span class="kw">plot</span>(NHVT.elevation, <span class="dt">col =</span> <span class="kw">rainbow</span>(<span class="dv">25</span>, <span class="dt">alpha =</span> <span class="fl">0.35</span>), <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb54-4"><a href="variables.html#cb54-4"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb54-5"><a href="variables.html#cb54-5"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-43-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="land-cover-data" class="section level2">
 <h2><span class="header-section-number">4.4</span> Land cover data</h2>
 <p>These data are downloaded from <a href="https://www.earthenv.org/landcover">EarthEnv land cover data set</a> with a function called <code>getlandcover.R</code> in the code folder.</p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="variables.html#cb54-1"></a>fils &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;data/landcover/lc_1km_&quot;</span>, <span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">12</span>, <span class="st">&quot;dom&quot;</span>), <span class="st">&quot;.tif&quot;</span>)</span>
-<span id="cb54-2"><a href="variables.html#cb54-2"></a><span class="co"># check if the files already exist, and if not, download</span></span>
-<span id="cb54-3"><a href="variables.html#cb54-3"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">all</span>(<span class="kw">file.exists</span>(fils))) {</span>
-<span id="cb54-4"><a href="variables.html#cb54-4"></a>    <span class="kw">getlandcover</span>(<span class="dt">gisdir =</span> <span class="st">&quot;data/landcover&quot;</span>, <span class="dt">ext =</span> NHVT)</span>
-<span id="cb54-5"><a href="variables.html#cb54-5"></a>}</span>
-<span id="cb54-6"><a href="variables.html#cb54-6"></a>NHVT.landcover &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">stack</span>(fils)</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="variables.html#cb55-1"></a>fils &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;data/landcover/lc_1km_&quot;</span>, <span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">12</span>, <span class="st">&quot;dom&quot;</span>), <span class="st">&quot;.tif&quot;</span>)</span>
+<span id="cb55-2"><a href="variables.html#cb55-2"></a><span class="co"># check if the files already exist, and if not, download</span></span>
+<span id="cb55-3"><a href="variables.html#cb55-3"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">all</span>(<span class="kw">file.exists</span>(fils))) {</span>
+<span id="cb55-4"><a href="variables.html#cb55-4"></a>    <span class="kw">getlandcover</span>(<span class="dt">gisdir =</span> <span class="st">&quot;data/landcover&quot;</span>, <span class="dt">ext =</span> NHVT)</span>
+<span id="cb55-5"><a href="variables.html#cb55-5"></a>}</span>
+<span id="cb55-6"><a href="variables.html#cb55-6"></a>NHVT.landcover &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">stack</span>(fils)</span></code></pre></div>
 <p>The names are cryptic. Fix that.</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="variables.html#cb55-1"></a>oldnames &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;lc_1km_&quot;</span>, <span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">12</span>, <span class="st">&quot;dom&quot;</span>))</span>
-<span id="cb55-2"><a href="variables.html#cb55-2"></a>newnames &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Mixed.Needleleaf.Trees&quot;</span>, <span class="st">&quot;Evergreen.Broadleaf.Trees&quot;</span>, </span>
-<span id="cb55-3"><a href="variables.html#cb55-3"></a>    <span class="st">&quot;Deciduous.Broadleaf.Trees&quot;</span>, <span class="st">&quot;Mixed.Other.Trees&quot;</span>, <span class="st">&quot;Shrubs&quot;</span>, </span>
-<span id="cb55-4"><a href="variables.html#cb55-4"></a>    <span class="st">&quot;Herbaceous&quot;</span>, <span class="st">&quot;Cultivated&quot;</span>, <span class="st">&quot;Flooded&quot;</span>, <span class="st">&quot;Urban&quot;</span>, <span class="st">&quot;Snow&quot;</span>, <span class="st">&quot;Barren&quot;</span>, </span>
-<span id="cb55-5"><a href="variables.html#cb55-5"></a>    <span class="st">&quot;Water&quot;</span>, <span class="st">&quot;Dominant.Land.Cover&quot;</span>)</span>
-<span id="cb55-6"><a href="variables.html#cb55-6"></a><span class="kw">names</span>(NHVT.landcover)[<span class="kw">match</span>(<span class="kw">names</span>(NHVT.landcover), oldnames)] &lt;-<span class="st"> </span>newnames</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="variables.html#cb56-1"></a>oldnames &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;lc_1km_&quot;</span>, <span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">12</span>, <span class="st">&quot;dom&quot;</span>))</span>
+<span id="cb56-2"><a href="variables.html#cb56-2"></a>newnames &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Mixed.Needleleaf.Trees&quot;</span>, <span class="st">&quot;Evergreen.Broadleaf.Trees&quot;</span>, </span>
+<span id="cb56-3"><a href="variables.html#cb56-3"></a>    <span class="st">&quot;Deciduous.Broadleaf.Trees&quot;</span>, <span class="st">&quot;Mixed.Other.Trees&quot;</span>, <span class="st">&quot;Shrubs&quot;</span>, </span>
+<span id="cb56-4"><a href="variables.html#cb56-4"></a>    <span class="st">&quot;Herbaceous&quot;</span>, <span class="st">&quot;Cultivated&quot;</span>, <span class="st">&quot;Flooded&quot;</span>, <span class="st">&quot;Urban&quot;</span>, <span class="st">&quot;Snow&quot;</span>, <span class="st">&quot;Barren&quot;</span>, </span>
+<span id="cb56-5"><a href="variables.html#cb56-5"></a>    <span class="st">&quot;Water&quot;</span>, <span class="st">&quot;Dominant.Land.Cover&quot;</span>)</span>
+<span id="cb56-6"><a href="variables.html#cb56-6"></a><span class="kw">names</span>(NHVT.landcover)[<span class="kw">match</span>(<span class="kw">names</span>(NHVT.landcover), oldnames)] &lt;-<span class="st"> </span>newnames</span></code></pre></div>
 <p>I want to make a layer for trees which are in layers 1 to 4.</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="variables.html#cb56-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>) {</span>
-<span id="cb56-2"><a href="variables.html#cb56-2"></a>    fil &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;data/landcover/lc_1km_&quot;</span>, i, <span class="st">&quot;.tif&quot;</span>)</span>
-<span id="cb56-3"><a href="variables.html#cb56-3"></a>    r &lt;-<span class="st"> </span><span class="kw">raster</span>(fil)</span>
-<span id="cb56-4"><a href="variables.html#cb56-4"></a>    <span class="cf">if</span> (i <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) </span>
-<span id="cb56-5"><a href="variables.html#cb56-5"></a>        rt &lt;-<span class="st"> </span>r <span class="cf">else</span> rt &lt;-<span class="st"> </span>r <span class="op">+</span><span class="st"> </span>rt</span>
-<span id="cb56-6"><a href="variables.html#cb56-6"></a>}</span>
-<span id="cb56-7"><a href="variables.html#cb56-7"></a>NHVT.Trees &lt;-<span class="st"> </span>rt</span>
-<span id="cb56-8"><a href="variables.html#cb56-8"></a><span class="kw">names</span>(NHVT.Trees) &lt;-<span class="st"> &quot;Tree.Cover&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="variables.html#cb57-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>) {</span>
+<span id="cb57-2"><a href="variables.html#cb57-2"></a>    fil &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;data/landcover/lc_1km_&quot;</span>, i, <span class="st">&quot;.tif&quot;</span>)</span>
+<span id="cb57-3"><a href="variables.html#cb57-3"></a>    r &lt;-<span class="st"> </span><span class="kw">raster</span>(fil)</span>
+<span id="cb57-4"><a href="variables.html#cb57-4"></a>    <span class="cf">if</span> (i <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) </span>
+<span id="cb57-5"><a href="variables.html#cb57-5"></a>        rt &lt;-<span class="st"> </span>r <span class="cf">else</span> rt &lt;-<span class="st"> </span>r <span class="op">+</span><span class="st"> </span>rt</span>
+<span id="cb57-6"><a href="variables.html#cb57-6"></a>}</span>
+<span id="cb57-7"><a href="variables.html#cb57-7"></a>NHVT.Trees &lt;-<span class="st"> </span>rt</span>
+<span id="cb57-8"><a href="variables.html#cb57-8"></a><span class="kw">names</span>(NHVT.Trees) &lt;-<span class="st"> &quot;Tree.Cover&quot;</span></span></code></pre></div>
 <p><em>Trillium undulatum</em> is associated with tree cover.</p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="variables.html#cb57-1"></a><span class="kw">plot</span>(NHVT.Trees)</span>
-<span id="cb57-2"><a href="variables.html#cb57-2"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>)</span>
-<span id="cb57-3"><a href="variables.html#cb57-3"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb57-4"><a href="variables.html#cb57-4"></a><span class="kw">title</span>(<span class="st">&quot;Tree Cover&quot;</span>)</span>
-<span id="cb57-5"><a href="variables.html#cb57-5"></a><span class="kw">plot</span>(<span class="kw">subset</span>(trillium, species <span class="op">==</span><span class="st"> &quot;Trillium undulatum&quot;</span>), <span class="dt">pch =</span> <span class="st">&quot;.&quot;</span>, </span>
-<span id="cb57-6"><a href="variables.html#cb57-6"></a>    <span class="dt">cex =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb57-7"><a href="variables.html#cb57-7"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
-<p><img src="sdm-demo_files/figure-html/unnamed-chunk-46-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="variables.html#cb58-1"></a><span class="kw">plot</span>(NHVT.Trees)</span>
+<span id="cb58-2"><a href="variables.html#cb58-2"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb58-3"><a href="variables.html#cb58-3"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb58-4"><a href="variables.html#cb58-4"></a><span class="kw">title</span>(<span class="st">&quot;Tree Cover&quot;</span>)</span>
+<span id="cb58-5"><a href="variables.html#cb58-5"></a><span class="kw">plot</span>(<span class="kw">subset</span>(trillium, species <span class="op">==</span><span class="st"> &quot;Trillium undulatum&quot;</span>), <span class="dt">pch =</span> <span class="st">&quot;.&quot;</span>, </span>
+<span id="cb58-6"><a href="variables.html#cb58-6"></a>    <span class="dt">cex =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb58-7"><a href="variables.html#cb58-7"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-47-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="stack-all-variables" class="section level2">
 <h2><span class="header-section-number">4.5</span> Stack all variables</h2>
 <p>First, I will create a stack with all my variables.</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="variables.html#cb58-1"></a>allVars &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">stack</span>(NHVTVars, NHVT.elevation, NHVT.slope, </span>
-<span id="cb58-2"><a href="variables.html#cb58-2"></a>    NHVT.aspect, NHVT.landcover, NHVT.Trees)</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="variables.html#cb59-1"></a>allVars &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">stack</span>(NHVTVars, NHVT.elevation, NHVT.slope, </span>
+<span id="cb59-2"><a href="variables.html#cb59-2"></a>    NHVT.aspect, NHVT.landcover, NHVT.Trees)</span></code></pre></div>
 </div>
 <div id="fix-layer-names" class="section level2">
 <h2><span class="header-section-number">4.6</span> Fix layer names</h2>
 <p>The names in <code>allVars</code> are annoying, so I’ll give it better names.</p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="variables.html#cb59-1"></a><span class="kw">names</span>(allVars)</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="variables.html#cb60-1"></a><span class="kw">names</span>(allVars)</span></code></pre></div>
 <pre><code> [1] &quot;bio1_13&quot;                   &quot;bio2_13&quot;                  
  [3] &quot;bio3_13&quot;                   &quot;bio4_13&quot;                  
  [5] &quot;bio5_13&quot;                   &quot;bio6_13&quot;                  
@@ -355,29 +355,29 @@ Vcells 7055591 53.9   14867321 113.5      16384 14864751 113.5</code></pre>
 [33] &quot;Barren&quot;                    &quot;Water&quot;                    
 [35] &quot;Dominant.Land.Cover&quot;       &quot;Tree.Cover&quot;               </code></pre>
 <p>I will write code to assign the right names. That way I won’t risk giving the wrong names to columns.</p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="variables.html#cb61-1"></a><span class="co"># these are the annoying names</span></span>
-<span id="cb61-2"><a href="variables.html#cb61-2"></a>oldcols &lt;-<span class="st"> </span><span class="kw">c</span>(bioclimnames<span class="op">$</span>name, <span class="st">&quot;USA1_alt&quot;</span>)</span>
-<span id="cb61-3"><a href="variables.html#cb61-3"></a><span class="co"># better names</span></span>
-<span id="cb61-4"><a href="variables.html#cb61-4"></a>newcols &lt;-<span class="st"> </span><span class="kw">c</span>(bioclimnames<span class="op">$</span>col, <span class="st">&quot;elevation&quot;</span>)</span>
-<span id="cb61-5"><a href="variables.html#cb61-5"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(oldcols)) <span class="kw">names</span>(allVars)[<span class="kw">names</span>(allVars) <span class="op">==</span><span class="st"> </span></span>
-<span id="cb61-6"><a href="variables.html#cb61-6"></a><span class="st">    </span>oldcols[i]] &lt;-<span class="st"> </span>newcols[i]</span></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="variables.html#cb62-1"></a><span class="co"># these are the annoying names</span></span>
+<span id="cb62-2"><a href="variables.html#cb62-2"></a>oldcols &lt;-<span class="st"> </span><span class="kw">c</span>(bioclimnames<span class="op">$</span>name, <span class="st">&quot;USA1_alt&quot;</span>)</span>
+<span id="cb62-3"><a href="variables.html#cb62-3"></a><span class="co"># better names</span></span>
+<span id="cb62-4"><a href="variables.html#cb62-4"></a>newcols &lt;-<span class="st"> </span><span class="kw">c</span>(bioclimnames<span class="op">$</span>col, <span class="st">&quot;elevation&quot;</span>)</span>
+<span id="cb62-5"><a href="variables.html#cb62-5"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(oldcols)) <span class="kw">names</span>(allVars)[<span class="kw">names</span>(allVars) <span class="op">==</span><span class="st"> </span></span>
+<span id="cb62-6"><a href="variables.html#cb62-6"></a><span class="st">    </span>oldcols[i]] &lt;-<span class="st"> </span>newcols[i]</span></code></pre></div>
 </div>
 <div id="fix-temperature-in-gbif" class="section level2">
 <h2><span class="header-section-number">4.7</span> Fix temperature in GBIF</h2>
 <p>The temperature returned by GBIF is temperature x 10 so I will fix that.</p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="variables.html#cb62-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">names</span>(allVars)[stringr<span class="op">::</span><span class="kw">str_detect</span>(<span class="kw">names</span>(allVars), </span>
-<span id="cb62-2"><a href="variables.html#cb62-2"></a>    <span class="st">&quot;temp&quot;</span>)]) {</span>
-<span id="cb62-3"><a href="variables.html#cb62-3"></a>    allVars[[i]] &lt;-<span class="st"> </span>allVars[[i]]<span class="op">/</span><span class="dv">10</span></span>
-<span id="cb62-4"><a href="variables.html#cb62-4"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="variables.html#cb63-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">names</span>(allVars)[stringr<span class="op">::</span><span class="kw">str_detect</span>(<span class="kw">names</span>(allVars), </span>
+<span id="cb63-2"><a href="variables.html#cb63-2"></a>    <span class="st">&quot;temp&quot;</span>)]) {</span>
+<span id="cb63-3"><a href="variables.html#cb63-3"></a>    allVars[[i]] &lt;-<span class="st"> </span>allVars[[i]]<span class="op">/</span><span class="dv">10</span></span>
+<span id="cb63-4"><a href="variables.html#cb63-4"></a>}</span></code></pre></div>
 </div>
 <div id="save" class="section level2">
 <h2><span class="header-section-number">4.8</span> Save</h2>
 <p>Finally, I will save <code>allVars</code> the stack of raster layers to a file.</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="variables.html#cb63-1"></a>rf &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">writeRaster</span>(allVars, <span class="dt">filename =</span> <span class="st">&quot;data/allVars.grd&quot;</span>, </span>
-<span id="cb63-2"><a href="variables.html#cb63-2"></a>    <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="variables.html#cb64-1"></a>rf &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">writeRaster</span>(allVars, <span class="dt">filename =</span> <span class="st">&quot;data/allVars.grd&quot;</span>, </span>
+<span id="cb64-2"><a href="variables.html#cb64-2"></a>    <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 <p>Plot. I use <code>rf</code> here because raster layers are associated with files on disk which need to be read. R Markdown doesn’t like reading from the temporary files sometimes. By using <code>rf</code> I direct it to use the <code>data/allVars.grd</code> file not a temporary file.</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="variables.html#cb64-1"></a><span class="kw">plot</span>(rf)</span></code></pre></div>
-<p><img src="sdm-demo_files/figure-html/unnamed-chunk-52-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="variables.html#cb65-1"></a><span class="kw">plot</span>(rf)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-53-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <!--
 soils
 https://r-forge.r-project.org/scm/viewvc.php/*checkout*/docs/soilDB/soilDB-Intro.html?root=aqp

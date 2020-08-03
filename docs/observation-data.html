@@ -165,87 +165,85 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="set-up" class="section level2">
 <h2><span class="header-section-number">3.1</span> Set-up</h2>
 <p>This example will use the following libraries:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="observation-data.html#cb15-1"></a><span class="kw">library</span>(dismo)</span>
-<span id="cb15-2"><a href="observation-data.html#cb15-2"></a><span class="kw">library</span>(sp)</span>
-<span id="cb15-3"><a href="observation-data.html#cb15-3"></a><span class="kw">library</span>(raster)</span>
-<span id="cb15-4"><a href="observation-data.html#cb15-4"></a><span class="kw">library</span>(maps)</span>
-<span id="cb15-5"><a href="observation-data.html#cb15-5"></a><span class="kw">library</span>(stringr)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="observation-data.html#cb16-1"></a><span class="kw">library</span>(dismo)</span>
+<span id="cb16-2"><a href="observation-data.html#cb16-2"></a><span class="kw">library</span>(sp)</span>
+<span id="cb16-3"><a href="observation-data.html#cb16-3"></a><span class="kw">library</span>(here)</span></code></pre></div>
 <p>Load the shapefiles created earlier.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="observation-data.html#cb16-1"></a><span class="kw">load</span>(<span class="st">&quot;data/shapefiles.RData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="observation-data.html#cb17-1"></a><span class="kw">load</span>(<span class="st">&quot;data/shapefiles.RData&quot;</span>)</span></code></pre></div>
 </div>
 <div id="download-data" class="section level2">
 <h2><span class="header-section-number">3.2</span> Download data</h2>
 <p>I will download occurrence data for <em>Trillium grandiflorum</em> and <em>Trillium undulatum</em> in my NHVT bounding box from the <a href="https://www.gbif.org/">Global Biodiversity Information Facility</a>. <code>nrecs</code> seems to be ignored. <code>geo</code> means only points with longitude and latitude. <code>removeZeros</code> means get rid of NA in location. <code>ext</code> is the bounding box to use.</p>
 <p>First I set where I will save the file and check if it is already there. I do this because if I rerun this script, I don’t want to re-download. Note that GBIF data is updated weekly so using a time-stamp on your file might be good, but I am not doing that for this example.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="observation-data.html#cb17-1"></a>filePath &lt;-<span class="st"> </span><span class="kw">file.path</span>(here<span class="op">::</span><span class="kw">here</span>(), <span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="observation-data.html#cb18-1"></a>filePath &lt;-<span class="st"> </span><span class="kw">file.path</span>(here<span class="op">::</span><span class="kw">here</span>(), <span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span></code></pre></div>
 <p>Now I download if I haven’t downloaded already. The downloaded data has many columns that I don’t need. I will subset the following columns. <code>select</code> in the <code>subset()</code> call says what columns to use.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="observation-data.html#cb18-1"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">file.exists</span>(filePath)) {</span>
-<span id="cb18-2"><a href="observation-data.html#cb18-2"></a>    <span class="co"># Download</span></span>
-<span id="cb18-3"><a href="observation-data.html#cb18-3"></a>    grandiflorum &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">gbif</span>(<span class="st">&quot;Trillium&quot;</span>, <span class="dt">species =</span> <span class="st">&quot;grandiflorum&quot;</span>, </span>
-<span id="cb18-4"><a href="observation-data.html#cb18-4"></a>        <span class="dt">nrecs =</span> <span class="dv">300</span>, <span class="dt">geo =</span> <span class="ot">TRUE</span>, <span class="dt">removeZeros =</span> <span class="ot">TRUE</span>, <span class="dt">ext =</span> NHVT)</span>
-<span id="cb18-5"><a href="observation-data.html#cb18-5"></a>    undulatum &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">gbif</span>(<span class="st">&quot;Trillium&quot;</span>, <span class="dt">species =</span> <span class="st">&quot;undulatum&quot;</span>, </span>
-<span id="cb18-6"><a href="observation-data.html#cb18-6"></a>        <span class="dt">nrecs =</span> <span class="dv">300</span>, <span class="dt">geo =</span> <span class="ot">TRUE</span>, <span class="dt">removeZeros =</span> <span class="ot">TRUE</span>, <span class="dt">ext =</span> NHVT)</span>
-<span id="cb18-7"><a href="observation-data.html#cb18-7"></a>    trillium.raw &lt;-<span class="st"> </span><span class="kw">rbind</span>(grandiflorum, undulatum)</span>
-<span id="cb18-8"><a href="observation-data.html#cb18-8"></a>    </span>
-<span id="cb18-9"><a href="observation-data.html#cb18-9"></a>    <span class="co"># select columns</span></span>
-<span id="cb18-10"><a href="observation-data.html#cb18-10"></a>    colsWeNeed &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;species&quot;</span>, <span class="st">&quot;lat&quot;</span>, <span class="st">&quot;lon&quot;</span>, <span class="st">&quot;locality&quot;</span>, <span class="st">&quot;year&quot;</span>, </span>
-<span id="cb18-11"><a href="observation-data.html#cb18-11"></a>        <span class="st">&quot;coordinateUncertaintyInMeters&quot;</span>, <span class="st">&quot;occurrenceID&quot;</span>, <span class="st">&quot;occurrenceRemarks&quot;</span>, </span>
-<span id="cb18-12"><a href="observation-data.html#cb18-12"></a>        <span class="st">&quot;geodeticDatum&quot;</span>)</span>
-<span id="cb18-13"><a href="observation-data.html#cb18-13"></a>    </span>
-<span id="cb18-14"><a href="observation-data.html#cb18-14"></a>    trillium.raw &lt;-<span class="st"> </span><span class="kw">subset</span>(trillium.raw, <span class="dt">select =</span> colsWeNeed)</span>
-<span id="cb18-15"><a href="observation-data.html#cb18-15"></a>    </span>
-<span id="cb18-16"><a href="observation-data.html#cb18-16"></a>    <span class="kw">save</span>(trillium.raw, <span class="dt">file =</span> <span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span>
-<span id="cb18-17"><a href="observation-data.html#cb18-17"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="observation-data.html#cb19-1"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">file.exists</span>(filePath)) {</span>
+<span id="cb19-2"><a href="observation-data.html#cb19-2"></a>    <span class="co"># Download</span></span>
+<span id="cb19-3"><a href="observation-data.html#cb19-3"></a>    grandiflorum &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">gbif</span>(<span class="st">&quot;Trillium&quot;</span>, <span class="dt">species =</span> <span class="st">&quot;grandiflorum&quot;</span>, </span>
+<span id="cb19-4"><a href="observation-data.html#cb19-4"></a>        <span class="dt">nrecs =</span> <span class="dv">300</span>, <span class="dt">geo =</span> <span class="ot">TRUE</span>, <span class="dt">removeZeros =</span> <span class="ot">TRUE</span>, <span class="dt">ext =</span> NHVT)</span>
+<span id="cb19-5"><a href="observation-data.html#cb19-5"></a>    undulatum &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">gbif</span>(<span class="st">&quot;Trillium&quot;</span>, <span class="dt">species =</span> <span class="st">&quot;undulatum&quot;</span>, </span>
+<span id="cb19-6"><a href="observation-data.html#cb19-6"></a>        <span class="dt">nrecs =</span> <span class="dv">300</span>, <span class="dt">geo =</span> <span class="ot">TRUE</span>, <span class="dt">removeZeros =</span> <span class="ot">TRUE</span>, <span class="dt">ext =</span> NHVT)</span>
+<span id="cb19-7"><a href="observation-data.html#cb19-7"></a>    trillium.raw &lt;-<span class="st"> </span><span class="kw">rbind</span>(grandiflorum, undulatum)</span>
+<span id="cb19-8"><a href="observation-data.html#cb19-8"></a>    </span>
+<span id="cb19-9"><a href="observation-data.html#cb19-9"></a>    <span class="co"># select columns</span></span>
+<span id="cb19-10"><a href="observation-data.html#cb19-10"></a>    colsWeNeed &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;species&quot;</span>, <span class="st">&quot;lat&quot;</span>, <span class="st">&quot;lon&quot;</span>, <span class="st">&quot;locality&quot;</span>, <span class="st">&quot;year&quot;</span>, </span>
+<span id="cb19-11"><a href="observation-data.html#cb19-11"></a>        <span class="st">&quot;coordinateUncertaintyInMeters&quot;</span>, <span class="st">&quot;occurrenceID&quot;</span>, <span class="st">&quot;occurrenceRemarks&quot;</span>, </span>
+<span id="cb19-12"><a href="observation-data.html#cb19-12"></a>        <span class="st">&quot;geodeticDatum&quot;</span>)</span>
+<span id="cb19-13"><a href="observation-data.html#cb19-13"></a>    </span>
+<span id="cb19-14"><a href="observation-data.html#cb19-14"></a>    trillium.raw &lt;-<span class="st"> </span><span class="kw">subset</span>(trillium.raw, <span class="dt">select =</span> colsWeNeed)</span>
+<span id="cb19-15"><a href="observation-data.html#cb19-15"></a>    </span>
+<span id="cb19-16"><a href="observation-data.html#cb19-16"></a>    <span class="kw">save</span>(trillium.raw, <span class="dt">file =</span> <span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span>
+<span id="cb19-17"><a href="observation-data.html#cb19-17"></a>}</span></code></pre></div>
 <p>Load in the presences data (saved from code above).</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="observation-data.html#cb19-1"></a><span class="kw">load</span>(<span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="observation-data.html#cb20-1"></a><span class="kw">load</span>(<span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span></code></pre></div>
 </div>
 <div id="check-the-coordinate-projection" class="section level2">
 <h2><span class="header-section-number">3.3</span> Check the coordinate projection</h2>
 <p>Check the projection to make sure it makes sense and there is only one value. Check that it is the same projection as my other layers.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="observation-data.html#cb20-1"></a><span class="kw">unique</span>(trillium.raw<span class="op">$</span>geodeticDatum)  <span class="co"># &#39;WGS84&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="observation-data.html#cb21-1"></a><span class="kw">unique</span>(trillium.raw<span class="op">$</span>geodeticDatum)  <span class="co"># &#39;WGS84&#39;</span></span></code></pre></div>
 <pre><code>[1] &quot;WGS84&quot;</code></pre>
 </div>
 <div id="make-a-sp-object" class="section level2">
 <h2><span class="header-section-number">3.4</span> Make a sp object</h2>
 <p><code>trillium.raw</code> is just a data frame. I make it a <code>sp</code> object (specifically a <code>SpatialPointsDataFrame</code>) using <code>sp::coordinates()</code> to specify which columns are the longitude and latitude.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="observation-data.html#cb22-1"></a>trillium &lt;-<span class="st"> </span>trillium.raw</span>
-<span id="cb22-2"><a href="observation-data.html#cb22-2"></a>sp<span class="op">::</span><span class="kw">coordinates</span>(trillium) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;lon&quot;</span>, <span class="st">&quot;lat&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="observation-data.html#cb23-1"></a>trillium &lt;-<span class="st"> </span>trillium.raw</span>
+<span id="cb23-2"><a href="observation-data.html#cb23-2"></a>sp<span class="op">::</span><span class="kw">coordinates</span>(trillium) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;lon&quot;</span>, <span class="st">&quot;lat&quot;</span>)</span></code></pre></div>
 <p>Check that it looks ok and there are no NAs.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="observation-data.html#cb23-1"></a><span class="kw">summary</span>(trillium<span class="op">$</span>lon)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="observation-data.html#cb24-1"></a><span class="kw">summary</span>(trillium<span class="op">$</span>lon)</span></code></pre></div>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  -73.58  -73.04  -72.64  -72.44  -71.89  -70.61 </code></pre>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="observation-data.html#cb25-1"></a><span class="kw">summary</span>(trillium<span class="op">$</span>lat)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="observation-data.html#cb26-1"></a><span class="kw">summary</span>(trillium<span class="op">$</span>lat)</span></code></pre></div>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
   42.49   43.67   44.21   44.04   44.48   45.37 </code></pre>
 </div>
 <div id="check-for-inaccurate-location-data" class="section level2">
 <h2><span class="header-section-number">3.5</span> Check for inaccurate location data</h2>
 <p>The <code>coordinateUncertaintyInMeters</code> column give the uncertainty of the observation location. Some of the uncertainties are huge and I don’t want those.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="observation-data.html#cb27-1"></a><span class="kw">table</span>(<span class="kw">cut</span>(trillium<span class="op">$</span>coordinateUncertaintyInMeters, <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">200</span>, <span class="dv">500</span>, </span>
-<span id="cb27-2"><a href="observation-data.html#cb27-2"></a>    <span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">5000</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="observation-data.html#cb28-1"></a><span class="kw">table</span>(<span class="kw">cut</span>(trillium<span class="op">$</span>coordinateUncertaintyInMeters, <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">200</span>, <span class="dv">500</span>, </span>
+<span id="cb28-2"><a href="observation-data.html#cb28-2"></a>    <span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">5000</span>)))</span></code></pre></div>
 <pre><code>
       (0,200]     (200,500]   (500,1e+03] (1e+03,2e+03] (2e+03,5e+03] 
          1230            81            39            48            60 </code></pre>
 <p>I am going to keep only those locations with a location accuracy within 200m.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="observation-data.html#cb29-1"></a>good &lt;-<span class="st"> </span><span class="kw">which</span>(trillium<span class="op">$</span>coordinateUncertaintyInMeters <span class="op">&lt;</span><span class="st"> </span><span class="dv">200</span>)</span>
-<span id="cb29-2"><a href="observation-data.html#cb29-2"></a>trillium &lt;-<span class="st"> </span>trillium[good, ]</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="observation-data.html#cb30-1"></a>good &lt;-<span class="st"> </span><span class="kw">which</span>(trillium<span class="op">$</span>coordinateUncertaintyInMeters <span class="op">&lt;</span><span class="st"> </span><span class="dv">200</span>)</span>
+<span id="cb30-2"><a href="observation-data.html#cb30-2"></a>trillium &lt;-<span class="st"> </span>trillium[good, ]</span></code></pre></div>
 </div>
 <div id="plot" class="section level2">
 <h2><span class="header-section-number">3.6</span> Plot</h2>
 <p>Now I can plot the occurrences points and add the NH and VT state boundaries. <em>Trillium undulatum</em> is much more common. Hubbard Brook is outlined in blue.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="observation-data.html#cb30-1"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">axes =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb30-2"><a href="observation-data.html#cb30-2"></a><span class="kw">plot</span>(<span class="kw">subset</span>(trillium, species <span class="op">==</span><span class="st"> &quot;Trillium grandiflorum&quot;</span>), <span class="dt">pch =</span> <span class="dv">3</span>, </span>
-<span id="cb30-3"><a href="observation-data.html#cb30-3"></a>    <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb30-4"><a href="observation-data.html#cb30-4"></a><span class="kw">plot</span>(<span class="kw">subset</span>(trillium, species <span class="op">==</span><span class="st"> &quot;Trillium undulatum&quot;</span>), <span class="dt">pch =</span> <span class="dv">4</span>, </span>
-<span id="cb30-5"><a href="observation-data.html#cb30-5"></a>    <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb30-6"><a href="observation-data.html#cb30-6"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
-<p><img src="sdm-demo_files/figure-html/unnamed-chunk-24-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="observation-data.html#cb31-1"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">axes =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb31-2"><a href="observation-data.html#cb31-2"></a><span class="kw">plot</span>(<span class="kw">subset</span>(trillium, species <span class="op">==</span><span class="st"> &quot;Trillium grandiflorum&quot;</span>), <span class="dt">pch =</span> <span class="dv">3</span>, </span>
+<span id="cb31-3"><a href="observation-data.html#cb31-3"></a>    <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb31-4"><a href="observation-data.html#cb31-4"></a><span class="kw">plot</span>(<span class="kw">subset</span>(trillium, species <span class="op">==</span><span class="st"> &quot;Trillium undulatum&quot;</span>), <span class="dt">pch =</span> <span class="dv">4</span>, </span>
+<span id="cb31-5"><a href="observation-data.html#cb31-5"></a>    <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb31-6"><a href="observation-data.html#cb31-6"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-25-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="save" class="section level2">
 <h2><span class="header-section-number">3.7</span> Save</h2>
 <p>I will save to the trillium file also. Later I will be subsetting and using a grid with <code>pa=1</code> if trillium was observed in that grid cell so I want to name it to be clear that this is the original observance data.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="observation-data.html#cb31-1"></a>trillium_observed &lt;-<span class="st"> </span>trillium</span>
-<span id="cb31-2"><a href="observation-data.html#cb31-2"></a><span class="kw">save</span>(trillium, trillium.raw, <span class="dt">file =</span> <span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="observation-data.html#cb32-1"></a>trillium_observed &lt;-<span class="st"> </span>trillium</span>
+<span id="cb32-2"><a href="observation-data.html#cb32-2"></a><span class="kw">save</span>(trillium, trillium.raw, <span class="dt">file =</span> <span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span></code></pre></div>
 
 </div>
 </div>

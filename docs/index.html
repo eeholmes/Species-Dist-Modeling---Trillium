@@ -171,63 +171,40 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p align="center">
 <img src="images/logo.png" />
 </p>
-<div id="set-up" class="section level2">
-<h2><span class="header-section-number">0.1</span> Set-up</h2>
+<div id="set-up---r-and-rstudio" class="section level2">
+<h2><span class="header-section-number">0.1</span> Set-up - R and RStudio</h2>
 <p>If you have not updated R recently (in the last 6 months), go ahead and do that. Also update RStudio is you haven’t done that recently.</p>
-<p>The code will use the following R packages which you should install.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1"></a><span class="kw">library</span>(biomod2)</span></code></pre></div>
-<pre><code>biomod2 3.4.6 loaded.
-
-Type browseVignettes(package=&#39;biomod2&#39;) to access directly biomod2 vignettes.</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1"></a><span class="kw">library</span>(dismo)</span></code></pre></div>
-<pre><code>Loading required package: raster</code></pre>
-<pre><code>Loading required package: sp</code></pre>
-<pre><code>
-Attaching package: &#39;dismo&#39;</code></pre>
-<pre><code>The following object is masked from &#39;package:biomod2&#39;:
-
-    evaluate</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="index.html#cb8-1"></a><span class="kw">library</span>(sp)</span>
-<span id="cb8-2"><a href="index.html#cb8-2"></a><span class="kw">library</span>(raster)</span>
-<span id="cb8-3"><a href="index.html#cb8-3"></a><span class="kw">library</span>(ggplot2)</span>
-<span id="cb8-4"><a href="index.html#cb8-4"></a><span class="kw">library</span>(maps)</span>
-<span id="cb8-5"><a href="index.html#cb8-5"></a><span class="kw">library</span>(usdm)</span>
-<span id="cb8-6"><a href="index.html#cb8-6"></a><span class="kw">library</span>(ecospat)</span></code></pre></div>
-<pre><code>Loading required package: ade4</code></pre>
-<pre><code>Loading required package: ape</code></pre>
-<pre><code>
-Attaching package: &#39;ape&#39;</code></pre>
-<pre><code>The following objects are masked from &#39;package:raster&#39;:
-
-    rotate, zoom</code></pre>
-<pre><code>Loading required package: gbm</code></pre>
-<pre><code>Loaded gbm 2.1.8</code></pre>
-<pre><code>Registered S3 methods overwritten by &#39;adehabitatMA&#39;:
-  method                       from
-  print.SpatialPixelsDataFrame sp  
-  print.SpatialPixels          sp  </code></pre>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="index.html#cb16-1"></a><span class="kw">library</span>(corrplot)</span></code></pre></div>
-<pre><code>corrplot 0.84 loaded</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="index.html#cb18-1"></a><span class="kw">library</span>(MASS)</span></code></pre></div>
-<pre><code>
-Attaching package: &#39;MASS&#39;</code></pre>
-<pre><code>The following objects are masked from &#39;package:raster&#39;:
-
-    area, select</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="index.html#cb21-1"></a><span class="kw">library</span>(gam)</span></code></pre></div>
-<pre><code>Loading required package: splines</code></pre>
-<pre><code>Loading required package: foreach</code></pre>
-<pre><code>Loaded gam 1.16.1</code></pre>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="index.html#cb25-1"></a><span class="kw">library</span>(stringr)  <span class="co"># for easy string manipulation</span></span>
-<span id="cb25-2"><a href="index.html#cb25-2"></a><span class="kw">library</span>(tidyr)  <span class="co"># for data wrangling for ggplot</span></span></code></pre></div>
-<pre><code>
-Attaching package: &#39;tidyr&#39;</code></pre>
-<pre><code>The following object is masked from &#39;package:raster&#39;:
-
-    extract</code></pre>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="index.html#cb28-1"></a><span class="kw">library</span>(knitr)  <span class="co"># for R Markdown</span></span>
-<span id="cb28-2"><a href="index.html#cb28-2"></a><span class="kw">library</span>(here)  <span class="co"># for intelligent file directory navigation</span></span></code></pre></div>
-<pre><code>here() starts at /Users/eli.holmes/Documents/GitHub/Species Dist Modeling - Trillium</code></pre>
+<ul>
+<li>Download R <a href="https://cran.r-project.org/">here</a></li>
+<li>Download RStudio <a href="https://rstudio.com/products/rstudio/download/">here</a></li>
+</ul>
+</div>
+<div id="get-the-shapefiles-for-hubbard-brook" class="section level2">
+<h2><span class="header-section-number">0.2</span> Get the shapefiles for Hubbard Brook</h2>
+<p>Create a project in RStudio for the SDM building. Within that project, create a folder called <code>data</code> and one called <code>code</code>. Within <code>data</code> create a folder called <code>hbef_boundary</code>. Go to the <a href="https://github.com/eeholmes/Species-Dist-Modeling---Trillium/tree/master/data/hbef_boundary">Species-Dist-Modeling—Trillium</a> repository <code>hbef_boundary</code> folder and download all the files there into your <code>hbef_boundary</code> folder.</p>
+</div>
+<div id="set-up---r-packages" class="section level2">
+<h2><span class="header-section-number">0.3</span> Set-up - R packages</h2>
+<p>The code will use the following R packages which you will need to install. Open RStudio and go to the Packages tab on the right. Then click Install and search for the package.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1"></a><span class="kw">library</span>(biomod2)</span>
+<span id="cb1-2"><a href="index.html#cb1-2"></a><span class="kw">library</span>(dismo)</span>
+<span id="cb1-3"><a href="index.html#cb1-3"></a><span class="kw">library</span>(sp)</span>
+<span id="cb1-4"><a href="index.html#cb1-4"></a><span class="kw">library</span>(raster)</span>
+<span id="cb1-5"><a href="index.html#cb1-5"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb1-6"><a href="index.html#cb1-6"></a><span class="kw">library</span>(maps)</span>
+<span id="cb1-7"><a href="index.html#cb1-7"></a><span class="kw">library</span>(usdm)</span>
+<span id="cb1-8"><a href="index.html#cb1-8"></a><span class="kw">library</span>(ecospat)</span>
+<span id="cb1-9"><a href="index.html#cb1-9"></a><span class="kw">library</span>(corrplot)</span>
+<span id="cb1-10"><a href="index.html#cb1-10"></a><span class="kw">library</span>(MASS)</span>
+<span id="cb1-11"><a href="index.html#cb1-11"></a><span class="kw">library</span>(gam)</span>
+<span id="cb1-12"><a href="index.html#cb1-12"></a><span class="kw">library</span>(stringr)  <span class="co"># for easy string manipulation</span></span>
+<span id="cb1-13"><a href="index.html#cb1-13"></a><span class="kw">library</span>(tidyr)  <span class="co"># for data wrangling for ggplot</span></span>
+<span id="cb1-14"><a href="index.html#cb1-14"></a><span class="kw">library</span>(knitr)  <span class="co"># for R Markdown</span></span>
+<span id="cb1-15"><a href="index.html#cb1-15"></a><span class="kw">library</span>(here)  <span class="co"># for intelligent file directory navigation</span></span></code></pre></div>
+</div>
+<div id="data-downloads" class="section level2">
+<h2><span class="header-section-number">0.4</span> Data downloads</h2>
+<p>When you go through the Rmd files, it will download a lot of data into your project, but the next time you run the files, the code will look for the downloaded files and not rerun the downloads.</p>
 
 </div>
 </div>
