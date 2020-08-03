@@ -1,8 +1,10 @@
 # Species-Dist-Modeling---Painted Trillium
 
-A project to learn how to do species distribution modeling (SDM) in R. Ultimately, I'll use the biomod2 package but in the learning phase, I am running models without it.
+A project to learn how to do species distribution modeling (SDM) in R. Ultimately, I'll use the biomod2 package eventually but in the learning phase, I am running models without it.
 
-![Painted Trillium](images/painted_trillium.png)
+The material is in online book form [here](https://eeholmes.github.io/Species-Dist-Modeling---Trillium/)
+
+![Painted Trillium](images/logo.png)
 
 To explore
 
