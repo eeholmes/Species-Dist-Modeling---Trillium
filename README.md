@@ -4,7 +4,9 @@ A project to learn how to do species distribution modeling (SDM) in R. Ultimatel
 
 The material is in online book form [here](https://eeholmes.github.io/Species-Dist-Modeling---Trillium/)
 
-![Painted Trillium](images/logo.png)
+<p align="center">
+  <img src="images/logo.png" />
+</p>
 
 To explore
 
