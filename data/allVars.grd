@@ -1,0 +1,25 @@
+[general]
+creator=R package 'raster'
+created=2020-08-02 20:29:45
+[georeference]
+nrows=347
+ncols=361
+xmin=-73.6083333333333
+ymin=42.4916666666667
+xmax=-70.6
+ymax=45.3833333333333
+projection=+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0
+[data]
+datatype=FLT4S
+byteorder=little
+nbands=36
+bandorder=BIL
+minvalue=-2.3:7.6:23:864.2:13.1:-19.5:32.6:-6.1:-12.5:8.8:-13.8:768:88:41:6:245:132:239:139:-2:0:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0
+maxvalue=9.6:13.7:33:1072:29.4:-7.8:43.1:20.6:20.9:20.9:-1.8:2181:220:166:24:590:523:543:541:1834:0.412696711356957:6.28318530717959:66:36:100:100:34:54:100:48:100:0:40:100:12:101
+nodatavalue=-3.4e+38
+[legend]
+legendtype=
+values=
+color=
+[description]
+layername=mean.temp:temp.diurnal.range:isotherm:temp.seasonality:max.warm.temp:min.cold.temp:temp.annual.range:mean.temp.wet.qtr:mean.temp.dry.qtr:mean.temp.warm.qtr:mean.temp.cold.qtr:total.precip:precip.wet.month:precip.dry.month:precip.seasonality:precip.wet.qtr:precip.dry.qtr:precip.warm.qtr:precip.cold.qtr:elevation:slope:aspect:Mixed.Needleleaf.Trees:Evergreen.Broadleaf.Trees:Deciduous.Broadleaf.Trees:Mixed.Other.Trees:Shrubs:Herbaceous:Cultivated:Flooded:Urban:Snow:Barren:Water:Dominant.Land.Cover:Tree.Cover
