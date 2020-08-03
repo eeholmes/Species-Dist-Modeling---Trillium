@@ -26,6 +26,9 @@ A project to learn how to do species distribution modeling (SDM) in R. Ultimatel
   <img src="images/logo.png" />
 </p>
 
+## Prequisite knowledge
+
+Before going through the code, you should have a basic understanding of spatial data and working with that data in R. The spatial manipulations done here are super simple but if you have no or very little exposure to spatial data terminology or the raster package in R, then go through [this chapter on spatial data in R](https://rspatial.org/raster/spatial/index.html) first.
 
 ## Set-up - R and RStudio
 
@@ -42,7 +45,7 @@ Create a project in RStudio for the SDM building. Within that project, create a 
 
 The code will use the following R packages which you will need to install. Open RStudio and go to the Packages tab on the right. Then click Install and search for the package.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, results='hide'}
 library(biomod2)
 library(dismo)
 library(sp)

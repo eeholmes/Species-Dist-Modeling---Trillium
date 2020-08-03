@@ -6,7 +6,7 @@ I will download climate, landcover and elevation data to use as predictors.
 
 This chapter will use the following libraries. These must be loaded for the code in this chapter to work. I've used `::` to clarify what functions are associated with what packages, but still the packages must be loaded to do any plotting.
 
-```{r}
+```{r message=FALSE, results='hide', warning=FALSE}
 library(sp)
 library(raster)
 library(stringr)
