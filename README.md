@@ -1,18 +1,13 @@
-# Species-Dist-Modeling---Painted Trillium
+# Species-Dist-Modeling---Trillium
 
 A project to learn how to do species distribution modeling (SDM) in R. Ultimately, I'll use the biomod2 package eventually but in the learning phase, I am running models without it.
-
-The material is in online book form [here](https://eeholmes.github.io/Species-Dist-Modeling---Trillium/)
 
 <p align="center">
   <img src="images/logo.png" />
 </p>
 
-To explore
+To explore, start with the Rmd (R Markdown) files labelled 01_, 02_, etc. It is probably easiest to go through the material from the material in online book form [here](https://eeholmes.github.io/Species-Dist-Modeling---Trillium/).
 
-* Trillium VTNH Background.Rmd -- not interesting
-* Trillium VTNH Data.Rmd -- start here. Gets all the data set up to run an SDM.
-* Trillium VTNH GLM.Rmd -- fits GLM and GAM SDMs. Fairly hairy file to figure out how the models are performing and figure out decent set of environmental variables.
 
 Example of 4 SDMs for Painted Trillium using different variables.
 
