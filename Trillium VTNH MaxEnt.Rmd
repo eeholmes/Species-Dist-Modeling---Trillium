@@ -1,0 +1,45 @@
+---
+title: "Trillium Data Prep"
+author: "EE Holmes"
+date: "7/28/2020"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Set up
+
+This example will use the dismo library and `maxent()` function.
+```{r}
+library(dismo)
+```
+To use the `maxent()` function, I need to install MaxEnt and Java on my Mac. 
+
+To install Java, I used homebrew from a terminal window following these [instructions](http://www.lonecpluspluscoder.com/2017/04/27/installing-java-8-jdk-os-x-using-homebrew/).
+```
+brew cask install java
+```
+Installed everything I needed (and updated homebrew for me).
+
+To install MaxEnt, I downloaded it from [here](https://biodiversityinformatics.amnh.org/open_source/maxent/). This downloaded a zip file which I then unzipped (double-clicked on it). Inside the folder, is the file `maxent.jar`. I need to put that in the `java` folder in the `dismo` library folder. On my mac, I install packages to two different places (because of package development work), so I needed to first find `dismo`.
+Start finding which library path has `dismo`.
+```
+for(i in .libPaths()) if("dismo" %in% dir(i)) print(i)
+```
+Then I moved `maxent.jar` into that folder. Note the Library folder is hidden on the Mac. Hold down the Option key when you have a finder window open, and then click Go at the top navbar. That will make Library show up in the Go dropdown tab. One in the Library folder, I could navigate to the `java` subfolder in the `dismo` folder.  Another approach would be to do the following from the R command line:
+```
+file.copy("maxent.jar", file.path(.libPaths()[1], "dismo/java"))
+```
+assuming `maxent.jar` is in my working directory. Note I always use `file.path()` to create file paths because then it is machine (Mac vs PC) independent.
+
+
+
+
+
+

@@ -1,0 +1,25 @@
+---
+title: "Project"
+author: "EE Holmes"
+date: "8/2/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## A possible question
+
+
+## Basic
+
+* Using the [EpiCollect App](https://five.epicollect.net/), visit random sites, search for the Trillium species and then record presence/absence.
+
+* Use that to test the SDMs produced from non-random iNaturalist data.
+
+## Hubbard Brook
+
+Using 10-20 random 1km x 1km grids in Hubbard Brook, so a survey and count the density of Trillium along with other attributes. If you can visit sites with the weather stations, that would be ideal (but might not be possible).
+
+Or do a transect while walking to research sites.
