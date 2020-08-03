@@ -23,3 +23,12 @@ knitr::opts_chunk$set(echo = TRUE)
 Using 10-20 random 1km x 1km grids in Hubbard Brook, so a survey and count the density of Trillium along with other attributes. If you can visit sites with the weather stations, that would be ideal (but might not be possible).
 
 Or do a transect while walking to research sites.
+
+## Links
+
+* Lots of climate data. https://writingfornature.wordpress.com/links-to-interesting-blogs/weather-and-climate-resources/
+* Background article https://academic.oup.com/bioscience/article/69/7/544/5505326
+* Packages
+    * biomod2
+    * Wallace
+    
