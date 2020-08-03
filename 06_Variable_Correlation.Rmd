@@ -1,0 +1,88 @@
+# Variable Correlation
+
+Including variables that are highly correlated is a big problem when doing regression analyses. You will get pairs of highly positive and negative effect size estimates and huge standard errors on your estimates. So we need to evaluate correlation and select a set of variables that is not terribly correlated.
+
+This example will use the following libraries.
+```{r message=FALSE, results='hide', warning=FALSE}
+library(corrplot)
+library(usdm)
+library(stringr)
+library(raster)
+```
+
+## Set-up
+
+Load the data prepared in earlier chapters. This loads `dat.und` with the climate data for each cell with presences of *Trillium undulatum* plus the background cells.
+```{r}
+load("data/trillium_with_predictors.RData")
+```
+
+There are a few covariates that I know I don't want. Specifically, the wet and dry qtr variables because that is summer in some cells and winter in others. Also I'll exclude Snow, since that is all 0. And I'll exclude `cells` and `species` since I don't use those ever. Finally, dominant land cover is a categorical variable so I will exclude that (to make my life easier).
+```{r}
+dat.und <- dat.und[, !stringr::str_detect(colnames(dat.und),"[.]wet[.]")]
+dat.und <- dat.und[, !stringr::str_detect(colnames(dat.und),"[.]dry[.]")]
+dat.und <- subset(dat.und, select=c(-cells, -species, -Dominant.Land.Cover, -Snow))
+```
+
+## Variable correlation
+
+First I will use the corrplot package to look at correlation visually.
+```{r}
+tmpdat <-subset(dat.und, select=stringr::str_detect(colnames(dat.und), "precip"))
+varCor <- cor(tmpdat, use = "na.or.complete")
+corrplot::corrplot(varCor)
+```
+
+Many of the temperature variables are very correlated.
+```{r}
+tmpdat <-subset(dat.und, select=stringr::str_detect(colnames(dat.und), "temp"))
+varCor <- cor(tmpdat, use = "na.or.complete")
+corrplot::corrplot(varCor)
+```
+
+After exploring the models, I came up with the following set of not too correlated variables that still explain much of the variability in presence/absence. But below I will also try variance inflation to select a set of non-collinear variables.
+
+```{r}
+envvars <- c("mean.temp", "temp.diurnal.range", "temp.seasonality", "precip.warm.qtr", "precip.seasonality", "precip.cold.qtr")
+```
+
+That gets me a set of variables that are not so horribly correlated.
+```{r}
+tmpdat <- dat.und[,envvars]
+varCor <- cor(tmpdat, use = "na.or.complete")
+corrplot::corrplot(varCor)
+```
+
+And the variance inflation factors look ok.
+```{r}
+usdm::vif(tmpdat)
+```
+
+```{r}
+plot(allVars[[envvars]])
+```
+
+## Variance Inflation Factor
+
+As an experiment, I will use variable inflation to select a set of non-correlated variables. This doesn't try to use any biological reasoning about limiting factors for Trillium. It is just a statistical method to chose a set of uncorrelated variables.
+```{r}
+vifres <- usdm::vifstep(subset(dat.und, select=c(-pa, -lon, -lat)))
+vifvars <- as.character(vifres@results$Variables)
+vifvars
+```
+
+## Save
+
+I'll test models with all variables and these subsets.
+
+```{r}
+topovars <- c("elevation", "slope", "aspect")
+lcvars <- c("Tree.Cover", "mean.temp", "precip.warm.qtr" )
+envvars <- c("mean.temp", "temp.diurnal.range", "temp.seasonality", "precip.warm.qtr", "precip.seasonality", "precip.cold.qtr")
+minEnvVars <- c("precip.warm.qtr", "mean.temp", "temp.diurnal.range")
+```
+
+I'll save because I'll be using these variables across different SDM chapters.
+```{r}
+save(topovars, lcvars, envvars, minEnvVars, vifvars, file="data/varlists.RData")
+```

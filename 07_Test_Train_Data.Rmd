@@ -1,0 +1,86 @@
+# Training and Testing Data
+
+Our `dat`, `dat.und` and `dat.grand` data frames have all our data. But when we fit models to data, we need to hold out some data for testing the fit.
+
+This is also called cross-validation. The jargon used is `folds` where each fold is the random sample of data that you will test against. So if we do `k-fold` cross-validation where `k=5`. That means we randomly assign our data to 5 groups (1 to 5). We do 5 fits. The first one will use group 1 as the testing data, and fit the model to the other data. The second one will use group 2 as the testing data and fit to the rest. Etc. That ensure that you test against different data each time.
+
+Another way to do this test is to randomly select 1/k proportion of your data to use for testing and repeat that many times to create many test/train data sets. I am going to use this approach.
+
+This chapter will use the following libraries.
+```{r message=FALSE, results='hide', warning=FALSE}
+library(dismo)
+```
+
+Load the data. This will output the names that are loaded.
+```{r}
+datnames <- load("data/trillium_with_predictors.RData")
+```
+
+## Presence train/test
+
+We set up a training set of presence data and a test set. `kfold` is just a function to randomly assign the data to `k` groups. I want just the presence data so will subset to `pa` column equal 1. I will call the presence only data `presdat`.
+
+```{r}
+set.seed(10)
+presdat <- subset(dat.und, pa == 1)
+group <- dismo::kfold(presdat, k = 5) # 5 groups = 20 test/80 train split
+```
+
+The testing data will be `group==1` and training data will be the rest.
+```{r}
+pres_train <- presdat[group != 1, ]
+pres_test <- presdat[group == 1, ]
+```
+
+## Background train/test
+
+We repeat the process above for the background data (the `pa=0`).
+
+```{r}
+bgdat <- subset(dat.und, pa == 0)
+group <- dismo::kfold(bgdat, k = 5)
+backg_train <- bgdat[group != 1, ]
+backg_test <- bgdat[group == 1, ]
+```
+
+## Training data
+
+We make separate presence and background train/test sets for evaluation purposes later. But for fitting we need a data frame with both train data sets (presence and background) together.
+```{r}
+traindat <- rbind(pres_train, backg_train)
+```
+
+## Create many datasets
+
+The above code would create just one dataset, but we want to create many since we want to see how/if the model changes with a different training set.
+
+I'll create a list and save the data there. I will run through the code above and assign my train/test datasets to a list. I need to save `traindat` used in the model fitting and `pres_test` and `backg_test` used in the evaluation functions.
+
+```{r}
+traindatlist <- list()
+n <- 20
+for (i in 1:n) {
+  presdat <- subset(dat.und, pa == 1)
+  group <- dismo::kfold(presdat, k = 5) # 5 groups = 20 test/80 train split
+  pres_train <- presdat[group != 1, ]
+  pres_test <- presdat[group == 1, ]
+  bgdat <- subset(dat.und, pa == 0)
+  group <- dismo::kfold(bgdat, k = 5)
+  backg_train <- bgdat[group != 1, ]
+  backg_test <- bgdat[group == 1, ]
+  traindatlist[[i]] <- list(
+    traindat = rbind(pres_train, backg_train),
+    pres_test = pres_test,
+    backg_test = backg_test
+  )
+}
+```
+
+## Save
+
+I'll add this to the `trillium_with_predictors` data file.
+```{r}
+save(datnames, traindatlist, file="data/trillium_with_predictors.RData")
+```
+
+

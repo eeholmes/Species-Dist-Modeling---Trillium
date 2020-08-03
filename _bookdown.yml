@@ -11,3 +11,5 @@ rmd_files:
   - "03_Observations.Rmd"
   - "04_Variables.Rmd"
   - "05_SDM_Data_Frame.Rmd"
+  - "06_Variable_Correlation.Rmd"
+  - "07_Test_Train_Data.Rmd"

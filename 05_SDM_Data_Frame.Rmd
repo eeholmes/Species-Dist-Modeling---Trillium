@@ -15,7 +15,7 @@ load("data/trillium_presences.RData")
 allVars <- raster::brick("data/allVars.grd")
 ```
 
-## Overview
+## Variable values for presences
 
 For fitting an SDM, I need a data frame where each row is a grid cell (in my NHVT raster) where the species has been observed (so presence = 1) and I have the variable value for that cell in the other columns. So the idea is to get the variable values for each of these observations.
 
@@ -29,8 +29,6 @@ plot(hbshp, add=TRUE, border="blue")
 EXCEPT that the variable data is on a grid while the observation data is points with lat/lon values. What I need is a data frame where each row is a grid cell where Trillium was observed (either once or many times) and the variable values for that cell.
 
 The following code gets you to that data frame.
-
-## Subset locations and variables
 
 ### Get the variable data
 
@@ -100,7 +98,6 @@ background <- background[,colnames(trillVars)]
 identical(colnames(background), colnames(trillVars))
 ```
 
-
 ##  Make final data frame
 
 Now I bind this two data frames together for final data frame with occurrences, climatic data, and my background zeros.
@@ -119,7 +116,15 @@ colnames(dat)
 
 ## Save
 
-I save the data frame. `dat` is a non-descriptive name and a little dangerous to use since the user might have `dat` already in their working environment.
+I save the data frame. `dat` is a non-descriptive name and a little dangerous to use since the user might have `dat` already in their working environment. I will also make `dat.und` and `dat.grand` for the two *Trillium* species. There are some NAs in the slope aspect data which I will get rid of.
 ```{r}
-save(dat, file="data/trillium_with_predictors.RData")
+dat.und <- subset(dat, species=="Trillium undulatum")
+dat.und <- na.omit(dat.und)
+dat.grand <- subset(dat, species=="Trillium grandiflorum")
+dat.grand <- na.omit(dat.grand)
+```
+
+Save.
+```{r}
+save(dat, dat.und, dat.grand, file="data/trillium_with_predictors.RData")
 ```
