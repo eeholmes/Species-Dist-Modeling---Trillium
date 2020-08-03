@@ -1,20 +1,4 @@
----
-title: "Trillium Background"
-author: "EE Holmes"
-date: "7/28/2020"
-output:
-  html_document:
-    toc: true
-    toc_depth: 2
-    toc_float: true
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(knitr)
-```
-
-# Overview
+# Trillium
 
 Trillium genus are long-lived, woodland, perennial wildflower found throughout eastern North America. In this example, I have temperature, precipitation and basic land cover data. I will use that to try to model Trillium distribution.
 

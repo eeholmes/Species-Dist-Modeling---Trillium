@@ -1,0 +1,78 @@
+# Shape files
+
+The first step is to define the spatial extent of the area you will be working with and set up any shape files you need to plot boundaries or polygons or mask out areas.
+
+```{r}
+library(sp)
+library(raster)
+library(maps)
+library(stringr)
+```
+
+## Create the boundary box
+
+First I need to define an `raster::extent` object for a box bounding NH and VT. This will be used to crop the data that we download. I can get a bounding box dynamically using `drawExtent()`. Click twice (upper corner/lower corner) on the map to select the region of interest. Don't go too far outside the lines.
+```{r eval=FALSE}
+maps::map('state', region=c('new hampshire', 'vermont', 'new york', 'massachusetts'))
+NHVT <- raster::drawExtent()
+```
+or I can use longitude/latitude values for the box and use `extent()`:
+```{r}
+NHVT <- raster::extent(-73.61056, -70.60205, 42.48873, 45.37969)
+```
+
+## Get the states shapefile
+
+I download the shapefile for the NH and VT state borders using `getData()` which gives polygons for countries. Level 1 will be the state boundaries (I assume). The shape file has all the states. Then I use `subset()` to get the two states that I want. `path` says where to save the downloaded file.
+```{r}
+usashp <- raster::getData('GADM', country='USA', level=1, path="data")
+nhvtshp <- subset(usashp, NAME_1 %in% c("New Hampshire", "Vermont"))
+nhshp <- subset(usashp, NAME_1 %in% c("New Hampshire"))
+vtshp <- subset(usashp, NAME_1 %in% c("Vermont"))
+```
+Check the projection for this shapefile:
+```{r}
+crs(nhvtshp)
+```
+
+I can plot the shapes.
+```{r}
+plot(nhvtshp, border="blue", axes=TRUE)
+```
+
+
+## Get the Hubbard Brook boundary
+
+I downloaded this shapefile separately and read it in. This will get the boundary of the Hubbard Brook Experimental Forest from a shapefile. Although I write "shapefile" singular, it is actually two files, the shapefile and some metafiles. If you look in the `hbef_boundary` folder you'll the metafiles.
+```{r}
+hbshp <- raster::shapefile("data/hbef_boundary/hbef_boundary.shp")
+```
+I check its projection and note that it is different from the NH+VT shapefile.
+```{r}
+crs(hbshp)
+```
+I transform the shapefile to get it on the same projection.
+```{r}
+newcrs <- crs(nhvtshp)
+hbshp <- sp::spTransform(hbshp, newcrs)
+```
+Plot it.
+```{r}
+plot(hbshp)
+```
+
+## Plot the boundaries together
+
+```{r}
+plot(nhvtshp, border="blue", axes=TRUE)
+plot(hbshp, add=TRUE)
+text(-71.8, 44, "HBEF", pos=4)
+```
+
+## Save
+
+I save the shapefile data to a file so I can use it later without rerunning this code.
+```{r}
+save(nhvtshp, hbshp, nhshp, vtshp, NHVT, file="data/shapefiles.RData")
+```
+

@@ -1,0 +1,53 @@
+--- 
+title: "SDMs - Trillium Example"
+author: "E. E. Holmes"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+fontsize: 12pt
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+description: "Example scripts for building SDMs for a terrestrial plant species."
+cover-image: images/logo.png
+favicon: "favicon.ico"
+---
+
+
+```{r RUNFIRST, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment=NA, tidy.opts=list(width.cutoff=60), tidy=TRUE, fig.align='center', out.width='80%')
+```
+
+# Overview {-}
+
+This an example of building a species distribution model.
+
+## Set-up
+
+If you have not updated R recently (in the last 6 months), go ahead and do that. Also update RStudio is you haven't done that recently.
+
+The code will use the following R packages which you should install. 
+```{r}
+library(biomod2)
+library(dismo)
+library(sp)
+library(raster)
+library(ggplot2)
+library(maps)
+library(usdm)
+library(ecospat)
+library(corrplot)
+library(MASS)
+library(gam)
+library(stringr) # for easy string manipulation
+library(tidyr) # for data wrangling for ggplot
+library(knitr) # for R Markdown
+library(here) # for intelligent file directory navigation
+```
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```

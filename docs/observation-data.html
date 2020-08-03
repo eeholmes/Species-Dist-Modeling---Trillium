@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Observation data | SDMs - Trillium Example</title>
+  <meta name="description" content="Example scripts for building SDMs for a terrestrial plant species." />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Observation data | SDMs - Trillium Example" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:image" content="images/logo.png" />
+  <meta property="og:description" content="Example scripts for building SDMs for a terrestrial plant species." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Observation data | SDMs - Trillium Example" />
+  
+  <meta name="twitter:description" content="Example scripts for building SDMs for a terrestrial plant species." />
+  <meta name="twitter:image" content="images/logo.png" />
+
+<meta name="author" content="E. E. Holmes" />
+
+
+<meta name="date" content="2020-08-03" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<link rel="prev" href="shape-files.html"/>
+<link rel="next" href="variables.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./index.html">SDM Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Overview</a></li>
+<li class="chapter" data-level="1" data-path="trillium.html"><a href="trillium.html"><i class="fa fa-check"></i><b>1</b> Trillium</a></li>
+<li class="chapter" data-level="2" data-path="shape-files.html"><a href="shape-files.html"><i class="fa fa-check"></i><b>2</b> Shape files</a></li>
+<li class="chapter" data-level="3" data-path="observation-data.html"><a href="observation-data.html"><i class="fa fa-check"></i><b>3</b> Observation data</a></li>
+<li class="chapter" data-level="4" data-path="variables.html"><a href="variables.html"><i class="fa fa-check"></i><b>4</b> Variables</a></li>
+<li class="chapter" data-level="5" data-path="sdm-data-frame.html"><a href="sdm-data-frame.html"><i class="fa fa-check"></i><b>5</b> SDM Data Frame</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">SDMs - Trillium Example</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="observation-data" class="section level1">
+<h1><span class="header-section-number">Chapter 3</span> Observation data</h1>
+<div id="set-up" class="section level2">
+<h2><span class="header-section-number">3.1</span> Set-up</h2>
+<p>This example will use the following libraries:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="observation-data.html#cb15-1"></a><span class="kw">library</span>(dismo)</span>
+<span id="cb15-2"><a href="observation-data.html#cb15-2"></a><span class="kw">library</span>(sp)</span>
+<span id="cb15-3"><a href="observation-data.html#cb15-3"></a><span class="kw">library</span>(raster)</span>
+<span id="cb15-4"><a href="observation-data.html#cb15-4"></a><span class="kw">library</span>(maps)</span>
+<span id="cb15-5"><a href="observation-data.html#cb15-5"></a><span class="kw">library</span>(stringr)</span></code></pre></div>
+<p>Load the shapefiles created earlier.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="observation-data.html#cb16-1"></a><span class="kw">load</span>(<span class="st">&quot;data/shapefiles.RData&quot;</span>)</span></code></pre></div>
+</div>
+<div id="download-data" class="section level2">
+<h2><span class="header-section-number">3.2</span> Download data</h2>
+<p>I will download occurrence data for <em>Trillium grandiflorum</em> and <em>Trillium undulatum</em> in my NHVT bounding box from the <a href="https://www.gbif.org/">Global Biodiversity Information Facility</a>. <code>nrecs</code> seems to be ignored. <code>geo</code> means only points with longitude and latitude. <code>removeZeros</code> means get rid of NA in location. <code>ext</code> is the bounding box to use.</p>
+<p>First I set where I will save the file and check if it is already there. I do this because if I rerun this script, I don’t want to re-download. Note that GBIF data is updated weekly so using a time-stamp on your file might be good, but I am not doing that for this example.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="observation-data.html#cb17-1"></a>filePath &lt;-<span class="st"> </span><span class="kw">file.path</span>(here<span class="op">::</span><span class="kw">here</span>(), <span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span></code></pre></div>
+<p>Now I download if I haven’t downloaded already. The downloaded data has many columns that I don’t need. I will subset the following columns. <code>select</code> in the <code>subset()</code> call says what columns to use.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="observation-data.html#cb18-1"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">file.exists</span>(filePath)) {</span>
+<span id="cb18-2"><a href="observation-data.html#cb18-2"></a>    <span class="co"># Download</span></span>
+<span id="cb18-3"><a href="observation-data.html#cb18-3"></a>    grandiflorum &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">gbif</span>(<span class="st">&quot;Trillium&quot;</span>, <span class="dt">species =</span> <span class="st">&quot;grandiflorum&quot;</span>, </span>
+<span id="cb18-4"><a href="observation-data.html#cb18-4"></a>        <span class="dt">nrecs =</span> <span class="dv">300</span>, <span class="dt">geo =</span> <span class="ot">TRUE</span>, <span class="dt">removeZeros =</span> <span class="ot">TRUE</span>, <span class="dt">ext =</span> NHVT)</span>
+<span id="cb18-5"><a href="observation-data.html#cb18-5"></a>    undulatum &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">gbif</span>(<span class="st">&quot;Trillium&quot;</span>, <span class="dt">species =</span> <span class="st">&quot;undulatum&quot;</span>, </span>
+<span id="cb18-6"><a href="observation-data.html#cb18-6"></a>        <span class="dt">nrecs =</span> <span class="dv">300</span>, <span class="dt">geo =</span> <span class="ot">TRUE</span>, <span class="dt">removeZeros =</span> <span class="ot">TRUE</span>, <span class="dt">ext =</span> NHVT)</span>
+<span id="cb18-7"><a href="observation-data.html#cb18-7"></a>    trillium.raw &lt;-<span class="st"> </span><span class="kw">rbind</span>(grandiflorum, undulatum)</span>
+<span id="cb18-8"><a href="observation-data.html#cb18-8"></a>    </span>
+<span id="cb18-9"><a href="observation-data.html#cb18-9"></a>    <span class="co"># select columns</span></span>
+<span id="cb18-10"><a href="observation-data.html#cb18-10"></a>    colsWeNeed &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;species&quot;</span>, <span class="st">&quot;lat&quot;</span>, <span class="st">&quot;lon&quot;</span>, <span class="st">&quot;locality&quot;</span>, <span class="st">&quot;year&quot;</span>, </span>
+<span id="cb18-11"><a href="observation-data.html#cb18-11"></a>        <span class="st">&quot;coordinateUncertaintyInMeters&quot;</span>, <span class="st">&quot;occurrenceID&quot;</span>, <span class="st">&quot;occurrenceRemarks&quot;</span>, </span>
+<span id="cb18-12"><a href="observation-data.html#cb18-12"></a>        <span class="st">&quot;geodeticDatum&quot;</span>)</span>
+<span id="cb18-13"><a href="observation-data.html#cb18-13"></a>    </span>
+<span id="cb18-14"><a href="observation-data.html#cb18-14"></a>    trillium.raw &lt;-<span class="st"> </span><span class="kw">subset</span>(trillium.raw, <span class="dt">select =</span> colsWeNeed)</span>
+<span id="cb18-15"><a href="observation-data.html#cb18-15"></a>    </span>
+<span id="cb18-16"><a href="observation-data.html#cb18-16"></a>    <span class="kw">save</span>(trillium.raw, <span class="dt">file =</span> <span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span>
+<span id="cb18-17"><a href="observation-data.html#cb18-17"></a>}</span></code></pre></div>
+<p>Load in the presences data (saved from code above).</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="observation-data.html#cb19-1"></a><span class="kw">load</span>(<span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span></code></pre></div>
+</div>
+<div id="check-the-coordinate-projection" class="section level2">
+<h2><span class="header-section-number">3.3</span> Check the coordinate projection</h2>
+<p>Check the projection to make sure it makes sense and there is only one value. Check that it is the same projection as my other layers.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="observation-data.html#cb20-1"></a><span class="kw">unique</span>(trillium.raw<span class="op">$</span>geodeticDatum)  <span class="co"># &#39;WGS84&#39;</span></span></code></pre></div>
+<pre><code>[1] &quot;WGS84&quot;</code></pre>
+</div>
+<div id="make-a-sp-object" class="section level2">
+<h2><span class="header-section-number">3.4</span> Make a sp object</h2>
+<p><code>trillium.raw</code> is just a data frame. I make it a <code>sp</code> object (specifically a <code>SpatialPointsDataFrame</code>) using <code>sp::coordinates()</code> to specify which columns are the longitude and latitude.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="observation-data.html#cb22-1"></a>trillium &lt;-<span class="st"> </span>trillium.raw</span>
+<span id="cb22-2"><a href="observation-data.html#cb22-2"></a>sp<span class="op">::</span><span class="kw">coordinates</span>(trillium) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;lon&quot;</span>, <span class="st">&quot;lat&quot;</span>)</span></code></pre></div>
+<p>Check that it looks ok and there are no NAs.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="observation-data.html#cb23-1"></a><span class="kw">summary</span>(trillium<span class="op">$</span>lon)</span></code></pre></div>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ -73.58  -73.04  -72.64  -72.44  -71.89  -70.61 </code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="observation-data.html#cb25-1"></a><span class="kw">summary</span>(trillium<span class="op">$</span>lat)</span></code></pre></div>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  42.49   43.67   44.21   44.04   44.48   45.37 </code></pre>
+</div>
+<div id="check-for-inaccurate-location-data" class="section level2">
+<h2><span class="header-section-number">3.5</span> Check for inaccurate location data</h2>
+<p>The <code>coordinateUncertaintyInMeters</code> column give the uncertainty of the observation location. Some of the uncertainties are huge and I don’t want those.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="observation-data.html#cb27-1"></a><span class="kw">table</span>(<span class="kw">cut</span>(trillium<span class="op">$</span>coordinateUncertaintyInMeters, <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">200</span>, <span class="dv">500</span>, </span>
+<span id="cb27-2"><a href="observation-data.html#cb27-2"></a>    <span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">5000</span>)))</span></code></pre></div>
+<pre><code>
+      (0,200]     (200,500]   (500,1e+03] (1e+03,2e+03] (2e+03,5e+03] 
+         1230            81            39            48            60 </code></pre>
+<p>I am going to keep only those locations with a location accuracy within 200m.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="observation-data.html#cb29-1"></a>good &lt;-<span class="st"> </span><span class="kw">which</span>(trillium<span class="op">$</span>coordinateUncertaintyInMeters <span class="op">&lt;</span><span class="st"> </span><span class="dv">200</span>)</span>
+<span id="cb29-2"><a href="observation-data.html#cb29-2"></a>trillium &lt;-<span class="st"> </span>trillium[good, ]</span></code></pre></div>
+</div>
+<div id="plot" class="section level2">
+<h2><span class="header-section-number">3.6</span> Plot</h2>
+<p>Now I can plot the occurrences points and add the NH and VT state boundaries. <em>Trillium undulatum</em> is much more common. Hubbard Brook is outlined in blue.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="observation-data.html#cb30-1"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">axes =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb30-2"><a href="observation-data.html#cb30-2"></a><span class="kw">plot</span>(<span class="kw">subset</span>(trillium, species <span class="op">==</span><span class="st"> &quot;Trillium grandiflorum&quot;</span>), <span class="dt">pch =</span> <span class="dv">3</span>, </span>
+<span id="cb30-3"><a href="observation-data.html#cb30-3"></a>    <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb30-4"><a href="observation-data.html#cb30-4"></a><span class="kw">plot</span>(<span class="kw">subset</span>(trillium, species <span class="op">==</span><span class="st"> &quot;Trillium undulatum&quot;</span>), <span class="dt">pch =</span> <span class="dv">4</span>, </span>
+<span id="cb30-5"><a href="observation-data.html#cb30-5"></a>    <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb30-6"><a href="observation-data.html#cb30-6"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-24-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="save" class="section level2">
+<h2><span class="header-section-number">3.7</span> Save</h2>
+<p>I will save to the trillium file also. Later I will be subsetting and using a grid with <code>pa=1</code> if trillium was observed in that grid cell so I want to name it to be clear that this is the original observance data.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="observation-data.html#cb31-1"></a>trillium_observed &lt;-<span class="st"> </span>trillium</span>
+<span id="cb31-2"><a href="observation-data.html#cb31-2"></a><span class="kw">save</span>(trillium, trillium.raw, <span class="dt">file =</span> <span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span></code></pre></div>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="shape-files.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="variables.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/eeholmes/Species-Dist-Modeling---Trillium/edit/master/03_Observations.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["sdm-demo.pdf"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

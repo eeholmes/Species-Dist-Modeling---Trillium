@@ -1,0 +1,26 @@
+[general]
+creator=R package 'raster'
+created=2020-08-03 10:08:51
+[georeference]
+nrows=347
+ncols=361
+xmin=-73.6083333333333
+ymin=42.4916666666667
+xmax=-70.6
+ymax=45.3833333333333
+projection=+proj=longlat +ellps=WGS84
+[data]
+datatype=FLT4S
+byteorder=little
+nbands=1
+bandorder=BIL
+categorical=FALSE
+minvalue=-2
+maxvalue=1834
+nodatavalue=-3.4e+38
+[legend]
+legendtype=
+values=
+color=
+[description]
+layername=USA1_alt

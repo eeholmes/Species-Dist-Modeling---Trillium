@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 5 SDM Data Frame | SDMs - Trillium Example</title>
+  <meta name="description" content="Example scripts for building SDMs for a terrestrial plant species." />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 5 SDM Data Frame | SDMs - Trillium Example" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:image" content="images/logo.png" />
+  <meta property="og:description" content="Example scripts for building SDMs for a terrestrial plant species." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 5 SDM Data Frame | SDMs - Trillium Example" />
+  
+  <meta name="twitter:description" content="Example scripts for building SDMs for a terrestrial plant species." />
+  <meta name="twitter:image" content="images/logo.png" />
+
+<meta name="author" content="E. E. Holmes" />
+
+
+<meta name="date" content="2020-08-03" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<link rel="prev" href="variables.html"/>
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./index.html">SDM Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Overview</a></li>
+<li class="chapter" data-level="1" data-path="trillium.html"><a href="trillium.html"><i class="fa fa-check"></i><b>1</b> Trillium</a></li>
+<li class="chapter" data-level="2" data-path="shape-files.html"><a href="shape-files.html"><i class="fa fa-check"></i><b>2</b> Shape files</a></li>
+<li class="chapter" data-level="3" data-path="observation-data.html"><a href="observation-data.html"><i class="fa fa-check"></i><b>3</b> Observation data</a></li>
+<li class="chapter" data-level="4" data-path="variables.html"><a href="variables.html"><i class="fa fa-check"></i><b>4</b> Variables</a></li>
+<li class="chapter" data-level="5" data-path="sdm-data-frame.html"><a href="sdm-data-frame.html"><i class="fa fa-check"></i><b>5</b> SDM Data Frame</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">SDMs - Trillium Example</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="sdm-data-frame" class="section level1">
+<h1><span class="header-section-number">Chapter 5</span> SDM Data Frame</h1>
+<div id="set-up" class="section level2">
+<h2><span class="header-section-number">5.1</span> Set-up</h2>
+<p>This example will use the following libraries:</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="sdm-data-frame.html#cb65-1"></a><span class="kw">library</span>(raster)</span></code></pre></div>
+<p>Load the shapefiles, Trillium data and variables raster stack created earlier.</p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="sdm-data-frame.html#cb66-1"></a><span class="kw">load</span>(<span class="st">&quot;data/shapefiles.RData&quot;</span>)</span>
+<span id="cb66-2"><a href="sdm-data-frame.html#cb66-2"></a><span class="kw">load</span>(<span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span>
+<span id="cb66-3"><a href="sdm-data-frame.html#cb66-3"></a>allVars &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">brick</span>(<span class="st">&quot;data/allVars.grd&quot;</span>)</span></code></pre></div>
+</div>
+<div id="overview" class="section level2">
+<h2><span class="header-section-number">5.2</span> Overview</h2>
+<p>For fitting an SDM, I need a data frame where each row is a grid cell (in my NHVT raster) where the species has been observed (so presence = 1) and I have the variable value for that cell in the other columns. So the idea is to get the variable values for each of these observations.</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="sdm-data-frame.html#cb67-1"></a><span class="kw">plot</span>(nhvtshp, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">axes =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb67-2"><a href="sdm-data-frame.html#cb67-2"></a><span class="kw">plot</span>(<span class="kw">subset</span>(trillium, species <span class="op">==</span><span class="st"> &quot;Trillium grandiflorum&quot;</span>), <span class="dt">pch =</span> <span class="dv">3</span>, </span>
+<span id="cb67-3"><a href="sdm-data-frame.html#cb67-3"></a>    <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb67-4"><a href="sdm-data-frame.html#cb67-4"></a><span class="kw">plot</span>(<span class="kw">subset</span>(trillium, species <span class="op">==</span><span class="st"> &quot;Trillium undulatum&quot;</span>), <span class="dt">pch =</span> <span class="dv">4</span>, </span>
+<span id="cb67-5"><a href="sdm-data-frame.html#cb67-5"></a>    <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb67-6"><a href="sdm-data-frame.html#cb67-6"></a><span class="kw">plot</span>(hbshp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">border =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-55-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>EXCEPT that the variable data is on a grid while the observation data is points with lat/lon values. What I need is a data frame where each row is a grid cell where Trillium was observed (either once or many times) and the variable values for that cell.</p>
+<p>The following code gets you to that data frame.</p>
+</div>
+<div id="subset-locations-and-variables" class="section level2">
+<h2><span class="header-section-number">5.3</span> Subset locations and variables</h2>
+<div id="get-the-variable-data" class="section level3">
+<h3><span class="header-section-number">5.3.1</span> Get the variable data</h3>
+<p>I can create a data frame with the values of the variables where Trillium locations are using the <code>extract()</code> function. This will take a lat/lon value, figure out what cell that lat/lon pair is in, and return the variable values for that cell. The function takes a raster layer or stack of layers and the point location data (as a spatial points object) and returns the values for each layer in a column. I use <code>cellnumbers=TRUE</code> to return what cell that lat/lon pair is in. This will allow me to eliminate duplicates (observations from the same cell).</p>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="sdm-data-frame.html#cb68-1"></a>trillVars &lt;-<span class="st"> </span><span class="kw">data.frame</span>(raster<span class="op">::</span><span class="kw">extract</span>(allVars, trillium, <span class="dt">cellnumbers =</span> <span class="ot">TRUE</span>))</span></code></pre></div>
+</div>
+<div id="add-on-the-species-pa-and-lonlat-info" class="section level3">
+<h3><span class="header-section-number">5.3.2</span> Add on the species, pa, and lon/lat info</h3>
+<p>I add on columns for the species name and “presence-absence”.</p>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="sdm-data-frame.html#cb69-1"></a>trillVars<span class="op">$</span>species &lt;-<span class="st"> </span>trillium<span class="op">$</span>species</span>
+<span id="cb69-2"><a href="sdm-data-frame.html#cb69-2"></a>trillVars<span class="op">$</span>pa &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb69-3"><a href="sdm-data-frame.html#cb69-3"></a>trillVars<span class="op">$</span>lon &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">xFromCell</span>(r, trillVars<span class="op">$</span>cells)</span>
+<span id="cb69-4"><a href="sdm-data-frame.html#cb69-4"></a>trillVars<span class="op">$</span>lat &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">yFromCell</span>(r, trillVars<span class="op">$</span>cells)</span></code></pre></div>
+<p>These are for grid cells. For later plotting, I might want the center of the cells so I’ll add that on.</p>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="sdm-data-frame.html#cb70-1"></a>trillVars<span class="op">$</span>lon &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">xFromCell</span>(r, trillVars<span class="op">$</span>cells)</span>
+<span id="cb70-2"><a href="sdm-data-frame.html#cb70-2"></a>trillVars<span class="op">$</span>lat &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">yFromCell</span>(r, trillVars<span class="op">$</span>cells)</span></code></pre></div>
+</div>
+<div id="check-for-duplicates" class="section level3">
+<h3><span class="header-section-number">5.3.3</span> Check for duplicates</h3>
+<p>Duplicates means multiple occurrences assigned to the same cell. We can find this by seeing how many values in the <code>cells</code> column are duplicates. There are many. Our raster cells are 0.5 x 0.5 degrees (so 1km or so?). Trillium occurrences in that same cell (lat/lon values that are in the same 0.5 square grid) will have the same cell number so will be “duplicates”, meaning an occurrence in a cell where there is already another occurrence.</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="sdm-data-frame.html#cb71-1"></a><span class="co"># this is where both cell and species are the same</span></span>
+<span id="cb71-2"><a href="sdm-data-frame.html#cb71-2"></a>dups &lt;-<span class="st"> </span><span class="kw">duplicated</span>(<span class="kw">cbind</span>(trillVars<span class="op">$</span>cells, trillVars<span class="op">$</span>species))</span>
+<span id="cb71-3"><a href="sdm-data-frame.html#cb71-3"></a><span class="kw">sum</span>(dups)</span></code></pre></div>
+<pre><code>[1] 478</code></pre>
+<p>I get rid of them by saying take the non-duplicated cell values.</p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="sdm-data-frame.html#cb73-1"></a>trillVars &lt;-<span class="st"> </span>trillVars[<span class="op">!</span>dups, ]</span></code></pre></div>
+<p>Now I have about half the number of lines of data.</p>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="sdm-data-frame.html#cb74-1"></a><span class="kw">dim</span>(trillVars)</span></code></pre></div>
+<pre><code>[1] 750  41</code></pre>
+</div>
+</div>
+<div id="background-points" class="section level2">
+<h2><span class="header-section-number">5.4</span> Background points</h2>
+<p>SDMs for presence only data need a set of samples from the background area where it is possible that the species could have been observed. Technically, we’d want to weight this background by where searching was more likely or at least remove regions where it is impossible to observe the species. Trillium won’t be observed in urban areas and water bodies so we might want to create a mask of <em>impossible</em> areas not include background from there. But to keep things simple, for now I’ll just sample randomly from my NHVT bounding box.</p>
+<p>I will add on 5000 random background points by sampling from all the cells in <code>allVars</code>. I want to keep the lon/lat information (cell centers in this case).</p>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="sdm-data-frame.html#cb76-1"></a>background &lt;-<span class="st"> </span><span class="kw">data.frame</span>(raster<span class="op">::</span><span class="kw">sampleRandom</span>(allVars, <span class="dt">size =</span> <span class="dv">5000</span>, </span>
+<span id="cb76-2"><a href="sdm-data-frame.html#cb76-2"></a>    <span class="dt">cells =</span> <span class="ot">TRUE</span>, <span class="dt">xy =</span> <span class="ot">TRUE</span>))</span></code></pre></div>
+<p>I need to fix the first three column names since I will be appending this data frame to the one above and that one uses <code>cells</code> as the cell column name. Also add on species name and presence-absence info.</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="sdm-data-frame.html#cb77-1"></a><span class="kw">names</span>(background)[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;cells&quot;</span>, <span class="st">&quot;lon&quot;</span>, <span class="st">&quot;lat&quot;</span>)</span>
+<span id="cb77-2"><a href="sdm-data-frame.html#cb77-2"></a>background<span class="op">$</span>pa &lt;-<span class="st"> </span><span class="dv">0</span></span></code></pre></div>
+<p>To make it easier to create my training and testing datasets for the two species, I make two copies of the background with a different species value for each.</p>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="sdm-data-frame.html#cb78-1"></a>background &lt;-<span class="st"> </span><span class="kw">rbind</span>(background, background)</span>
+<span id="cb78-2"><a href="sdm-data-frame.html#cb78-2"></a>background<span class="op">$</span>species &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;Trillium grandiflorum&quot;</span>, <span class="dv">5000</span>), <span class="kw">rep</span>(<span class="st">&quot;Trillium undulatum&quot;</span>, </span>
+<span id="cb78-3"><a href="sdm-data-frame.html#cb78-3"></a>    <span class="dv">5000</span>))</span></code></pre></div>
+<p>In order to bind this data frame to the presence one, I need the column names to also be in the same order. I need to fix that since <code>sampleRandom()</code> put the lat/lon columns in columns 2 and 3. The first line of code is selecting columns from <code>background</code> in the order shown after the <code>,</code> then I check that I did it right and the colnames are identical</p>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="sdm-data-frame.html#cb79-1"></a>background &lt;-<span class="st"> </span>background[, <span class="kw">colnames</span>(trillVars)]</span>
+<span id="cb79-2"><a href="sdm-data-frame.html#cb79-2"></a><span class="kw">identical</span>(<span class="kw">colnames</span>(background), <span class="kw">colnames</span>(trillVars))</span></code></pre></div>
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div id="make-final-data-frame" class="section level2">
+<h2><span class="header-section-number">5.5</span> Make final data frame</h2>
+<p>Now I bind this two data frames together for final data frame with occurrences, climatic data, and my background zeros.</p>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="sdm-data-frame.html#cb81-1"></a>dat &lt;-<span class="st"> </span><span class="kw">rbind</span>(trillVars, background)</span></code></pre></div>
+<p>The rownames are annoying so I will set to NULL.</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="sdm-data-frame.html#cb82-1"></a><span class="kw">rownames</span>(dat) &lt;-<span class="st"> </span><span class="ot">NULL</span></span></code></pre></div>
+<p>Now I have my final data frame with the following column names.</p>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="sdm-data-frame.html#cb83-1"></a><span class="kw">colnames</span>(dat)</span></code></pre></div>
+<pre><code> [1] &quot;cells&quot;                     &quot;mean.temp&quot;                
+ [3] &quot;temp.diurnal.range&quot;        &quot;isotherm&quot;                 
+ [5] &quot;temp.seasonality&quot;          &quot;max.warm.temp&quot;            
+ [7] &quot;min.cold.temp&quot;             &quot;temp.annual.range&quot;        
+ [9] &quot;mean.temp.wet.qtr&quot;         &quot;mean.temp.dry.qtr&quot;        
+[11] &quot;mean.temp.warm.qtr&quot;        &quot;mean.temp.cold.qtr&quot;       
+[13] &quot;total.precip&quot;              &quot;precip.wet.month&quot;         
+[15] &quot;precip.dry.month&quot;          &quot;precip.seasonality&quot;       
+[17] &quot;precip.wet.qtr&quot;            &quot;precip.dry.qtr&quot;           
+[19] &quot;precip.warm.qtr&quot;           &quot;precip.cold.qtr&quot;          
+[21] &quot;elevation&quot;                 &quot;slope&quot;                    
+[23] &quot;aspect&quot;                    &quot;Mixed.Needleleaf.Trees&quot;   
+[25] &quot;Evergreen.Broadleaf.Trees&quot; &quot;Deciduous.Broadleaf.Trees&quot;
+[27] &quot;Mixed.Other.Trees&quot;         &quot;Shrubs&quot;                   
+[29] &quot;Herbaceous&quot;                &quot;Cultivated&quot;               
+[31] &quot;Flooded&quot;                   &quot;Urban&quot;                    
+[33] &quot;Snow&quot;                      &quot;Barren&quot;                   
+[35] &quot;Water&quot;                     &quot;Dominant.Land.Cover&quot;      
+[37] &quot;Tree.Cover&quot;                &quot;species&quot;                  
+[39] &quot;pa&quot;                        &quot;lon&quot;                      
+[41] &quot;lat&quot;                      </code></pre>
+</div>
+<div id="save" class="section level2">
+<h2><span class="header-section-number">5.6</span> Save</h2>
+<p>I save the data frame. <code>dat</code> is a non-descriptive name and a little dangerous to use since the user might have <code>dat</code> already in their working environment.</p>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="sdm-data-frame.html#cb85-1"></a><span class="kw">save</span>(dat, <span class="dt">file =</span> <span class="st">&quot;data/trillium_with_predictors.RData&quot;</span>)</span></code></pre></div>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="variables.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/eeholmes/Species-Dist-Modeling---Trillium/edit/master/05_SDM_Data_Frame.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["sdm-demo.pdf"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
