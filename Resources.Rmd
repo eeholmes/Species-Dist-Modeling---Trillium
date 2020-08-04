@@ -1,0 +1,7 @@
+# Resources
+
+* [Wallace](https://wallaceecomod.github.io/)
+* [biomod2](http://www.will.chez-alice.fr/Software.html)
+* [maskRangeR](https://cmerow.github.io/maskRangeR/) temporally-spatially matches location to environment data.
+* [Training course from Wallace developers](http://biodiversity-informatics-training.org/)
+

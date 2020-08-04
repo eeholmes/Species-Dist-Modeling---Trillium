@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE, comment=NA, tidy.opts=list(width.cutoff=60), 
 
 # Overview {-}
 
-A project to learn how to do species distribution modeling (SDM) in R. Ultimately, I'll use the biomod2 package but in the learning phase, I am running models without it.
+A project to learn how to do species distribution modeling (SDM) in R. Ultimately, I'll probably use the [biomod2](https://cran.r-project.org/web/packages/biomod2/index.html) or [Wallace](https://cran.r-project.org/web/packages/wallace/index.html) packages but in the learning phase, I am building and running models manually.
 
 <p align="center">
   <img src="images/logo.png" />
