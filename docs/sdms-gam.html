@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 9 SDMs – GAM | SDMs - Trillium Example</title>
+  <meta name="description" content="Example scripts for building SDMs for a terrestrial plant species." />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 9 SDMs – GAM | SDMs - Trillium Example" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:image" content="images/logo.png" />
+  <meta property="og:description" content="Example scripts for building SDMs for a terrestrial plant species." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 9 SDMs – GAM | SDMs - Trillium Example" />
+  
+  <meta name="twitter:description" content="Example scripts for building SDMs for a terrestrial plant species." />
+  <meta name="twitter:image" content="images/logo.png" />
+
+<meta name="author" content="E. E. Holmes" />
+
+
+<meta name="date" content="2020-08-05" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<link rel="prev" href="sdms-glm.html"/>
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./index.html">SDM Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Overview</a><ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#prequisite-knowledge"><i class="fa fa-check"></i><b>0.1</b> Prequisite knowledge</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#set-up---r-and-rstudio"><i class="fa fa-check"></i><b>0.2</b> Set-up - R and RStudio</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#get-the-shapefiles-for-hubbard-brook"><i class="fa fa-check"></i><b>0.3</b> Get the shapefiles for Hubbard Brook</a></li>
+<li class="chapter" data-level="0.4" data-path="index.html"><a href="index.html#set-up---r-packages"><i class="fa fa-check"></i><b>0.4</b> Set-up - R packages</a></li>
+<li class="chapter" data-level="0.5" data-path="index.html"><a href="index.html#data-downloads"><i class="fa fa-check"></i><b>0.5</b> Data downloads</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="trillium.html"><a href="trillium.html"><i class="fa fa-check"></i><b>1</b> Trillium</a></li>
+<li class="chapter" data-level="2" data-path="shape-files.html"><a href="shape-files.html"><i class="fa fa-check"></i><b>2</b> Shape files</a><ul>
+<li class="chapter" data-level="2.1" data-path="shape-files.html"><a href="shape-files.html#create-the-boundary-box"><i class="fa fa-check"></i><b>2.1</b> Create the boundary box</a></li>
+<li class="chapter" data-level="2.2" data-path="shape-files.html"><a href="shape-files.html#get-the-states-shapefile"><i class="fa fa-check"></i><b>2.2</b> Get the states shapefile</a></li>
+<li class="chapter" data-level="2.3" data-path="shape-files.html"><a href="shape-files.html#get-the-hubbard-brook-boundary"><i class="fa fa-check"></i><b>2.3</b> Get the Hubbard Brook boundary</a></li>
+<li class="chapter" data-level="2.4" data-path="shape-files.html"><a href="shape-files.html#plot-the-boundaries-together"><i class="fa fa-check"></i><b>2.4</b> Plot the boundaries together</a></li>
+<li class="chapter" data-level="2.5" data-path="shape-files.html"><a href="shape-files.html#save"><i class="fa fa-check"></i><b>2.5</b> Save</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="observation-data.html"><a href="observation-data.html"><i class="fa fa-check"></i><b>3</b> Observation data</a><ul>
+<li class="chapter" data-level="3.1" data-path="observation-data.html"><a href="observation-data.html#set-up"><i class="fa fa-check"></i><b>3.1</b> Set-up</a></li>
+<li class="chapter" data-level="3.2" data-path="observation-data.html"><a href="observation-data.html#download-data"><i class="fa fa-check"></i><b>3.2</b> Download data</a></li>
+<li class="chapter" data-level="3.3" data-path="observation-data.html"><a href="observation-data.html#check-the-coordinate-projection"><i class="fa fa-check"></i><b>3.3</b> Check the coordinate projection</a></li>
+<li class="chapter" data-level="3.4" data-path="observation-data.html"><a href="observation-data.html#make-a-sp-object"><i class="fa fa-check"></i><b>3.4</b> Make a sp object</a></li>
+<li class="chapter" data-level="3.5" data-path="observation-data.html"><a href="observation-data.html#check-for-inaccurate-location-data"><i class="fa fa-check"></i><b>3.5</b> Check for inaccurate location data</a></li>
+<li class="chapter" data-level="3.6" data-path="observation-data.html"><a href="observation-data.html#plot"><i class="fa fa-check"></i><b>3.6</b> Plot</a></li>
+<li class="chapter" data-level="3.7" data-path="shape-files.html"><a href="shape-files.html#save"><i class="fa fa-check"></i><b>3.7</b> Save</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="variables.html"><a href="variables.html"><i class="fa fa-check"></i><b>4</b> Variables</a><ul>
+<li class="chapter" data-level="4.1" data-path="observation-data.html"><a href="observation-data.html#set-up"><i class="fa fa-check"></i><b>4.1</b> Set-up</a></li>
+<li class="chapter" data-level="4.2" data-path="variables.html"><a href="variables.html#climatic-data"><i class="fa fa-check"></i><b>4.2</b> Climatic data</a></li>
+<li class="chapter" data-level="4.3" data-path="variables.html"><a href="variables.html#topographical-data"><i class="fa fa-check"></i><b>4.3</b> Topographical data</a></li>
+<li class="chapter" data-level="4.4" data-path="variables.html"><a href="variables.html#land-cover-data"><i class="fa fa-check"></i><b>4.4</b> Land cover data</a></li>
+<li class="chapter" data-level="4.5" data-path="variables.html"><a href="variables.html#stack-all-variables"><i class="fa fa-check"></i><b>4.5</b> Stack all variables</a></li>
+<li class="chapter" data-level="4.6" data-path="variables.html"><a href="variables.html#fix-layer-names"><i class="fa fa-check"></i><b>4.6</b> Fix layer names</a></li>
+<li class="chapter" data-level="4.7" data-path="variables.html"><a href="variables.html#fix-temperature-in-gbif"><i class="fa fa-check"></i><b>4.7</b> Fix temperature in GBIF</a></li>
+<li class="chapter" data-level="4.8" data-path="shape-files.html"><a href="shape-files.html#save"><i class="fa fa-check"></i><b>4.8</b> Save</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="sdm-data-frame.html"><a href="sdm-data-frame.html"><i class="fa fa-check"></i><b>5</b> SDM Data Frame</a><ul>
+<li class="chapter" data-level="5.1" data-path="observation-data.html"><a href="observation-data.html#set-up"><i class="fa fa-check"></i><b>5.1</b> Set-up</a></li>
+<li class="chapter" data-level="5.2" data-path="sdm-data-frame.html"><a href="sdm-data-frame.html#variable-values-for-presences"><i class="fa fa-check"></i><b>5.2</b> Variable values for presences</a></li>
+<li class="chapter" data-level="5.3" data-path="sdm-data-frame.html"><a href="sdm-data-frame.html#background-points"><i class="fa fa-check"></i><b>5.3</b> Background points</a></li>
+<li class="chapter" data-level="5.4" data-path="sdm-data-frame.html"><a href="sdm-data-frame.html#make-final-data-frame"><i class="fa fa-check"></i><b>5.4</b> Make final data frame</a></li>
+<li class="chapter" data-level="5.5" data-path="shape-files.html"><a href="shape-files.html#save"><i class="fa fa-check"></i><b>5.5</b> Save</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="variable-correlation.html"><a href="variable-correlation.html"><i class="fa fa-check"></i><b>6</b> Variable Correlation</a><ul>
+<li class="chapter" data-level="6.1" data-path="observation-data.html"><a href="observation-data.html#set-up"><i class="fa fa-check"></i><b>6.1</b> Set-up</a></li>
+<li class="chapter" data-level="6.2" data-path="variable-correlation.html"><a href="variable-correlation.html#variable-correlation-1"><i class="fa fa-check"></i><b>6.2</b> Variable correlation</a></li>
+<li class="chapter" data-level="6.3" data-path="variable-correlation.html"><a href="variable-correlation.html#variance-inflation-factor"><i class="fa fa-check"></i><b>6.3</b> Variance Inflation Factor</a></li>
+<li class="chapter" data-level="6.4" data-path="shape-files.html"><a href="shape-files.html#save"><i class="fa fa-check"></i><b>6.4</b> Save</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html"><i class="fa fa-check"></i><b>7</b> Training and Testing Data</a><ul>
+<li class="chapter" data-level="7.1" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html#presence-traintest"><i class="fa fa-check"></i><b>7.1</b> Presence train/test</a></li>
+<li class="chapter" data-level="7.2" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html#background-traintest"><i class="fa fa-check"></i><b>7.2</b> Background train/test</a></li>
+<li class="chapter" data-level="7.3" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html#training-data"><i class="fa fa-check"></i><b>7.3</b> Training data</a></li>
+<li class="chapter" data-level="7.4" data-path="training-and-testing-data.html"><a href="training-and-testing-data.html#create-many-datasets"><i class="fa fa-check"></i><b>7.4</b> Create many datasets</a></li>
+<li class="chapter" data-level="7.5" data-path="shape-files.html"><a href="shape-files.html#save"><i class="fa fa-check"></i><b>7.5</b> Save</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="sdms-glm.html"><a href="sdms-glm.html"><i class="fa fa-check"></i><b>8</b> SDMs – GLM</a><ul>
+<li class="chapter" data-level="8.1" data-path="observation-data.html"><a href="observation-data.html#set-up"><i class="fa fa-check"></i><b>8.1</b> Set-up</a></li>
+<li class="chapter" data-level="8.2" data-path="sdms-glm.html"><a href="sdms-glm.html#fit-glm"><i class="fa fa-check"></i><b>8.2</b> Fit GLM</a></li>
+<li class="chapter" data-level="8.3" data-path="sdms-glm.html"><a href="sdms-glm.html#predictions"><i class="fa fa-check"></i><b>8.3</b> Predictions</a></li>
+<li class="chapter" data-level="8.4" data-path="sdms-glm.html"><a href="sdms-glm.html#model-evaluation"><i class="fa fa-check"></i><b>8.4</b> Model Evaluation</a></li>
+<li class="chapter" data-level="8.5" data-path="sdms-glm.html"><a href="sdms-glm.html#more-glm-fits"><i class="fa fa-check"></i><b>8.5</b> More GLM fits</a></li>
+<li class="chapter" data-level="8.6" data-path="sdms-glm.html"><a href="sdms-glm.html#variable-selection"><i class="fa fa-check"></i><b>8.6</b> Variable selection</a></li>
+<li class="chapter" data-level="8.7" data-path="sdms-glm.html"><a href="sdms-glm.html#model-comparison"><i class="fa fa-check"></i><b>8.7</b> Model Comparison</a></li>
+<li class="chapter" data-level="8.8" data-path="sdms-glm.html"><a href="sdms-glm.html#model-comparison-table-first-data-set"><i class="fa fa-check"></i><b>8.8</b> Model comparison table (first data set)</a></li>
+<li class="chapter" data-level="8.9" data-path="shape-files.html"><a href="shape-files.html#save"><i class="fa fa-check"></i><b>8.9</b> Save</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="sdms-gam.html"><a href="sdms-gam.html"><i class="fa fa-check"></i><b>9</b> SDMs – GAM</a><ul>
+<li class="chapter" data-level="9.1" data-path="observation-data.html"><a href="observation-data.html#set-up"><i class="fa fa-check"></i><b>9.1</b> Set-up</a></li>
+<li class="chapter" data-level="9.2" data-path="sdms-gam.html"><a href="sdms-gam.html#fit-gam"><i class="fa fa-check"></i><b>9.2</b> Fit GAM</a></li>
+<li class="chapter" data-level="9.3" data-path="sdms-gam.html"><a href="sdms-gam.html#effect-size-curves"><i class="fa fa-check"></i><b>9.3</b> Effect size curves</a></li>
+<li class="chapter" data-level="9.4" data-path="sdms-gam.html"><a href="sdms-gam.html#more-gam-fits"><i class="fa fa-check"></i><b>9.4</b> More GAM fits</a></li>
+<li class="chapter" data-level="9.5" data-path="sdms-glm.html"><a href="sdms-glm.html#model-comparison"><i class="fa fa-check"></i><b>9.5</b> Model Comparison</a></li>
+<li class="chapter" data-level="9.6" data-path="sdms-gam.html"><a href="sdms-gam.html#aucs"><i class="fa fa-check"></i><b>9.6</b> AUCs</a></li>
+<li class="chapter" data-level="9.7" data-path="sdms-gam.html"><a href="sdms-gam.html#boyce-index---spearman"><i class="fa fa-check"></i><b>9.7</b> Boyce Index - Spearman</a></li>
+<li class="chapter" data-level="9.8" data-path="sdms-gam.html"><a href="sdms-gam.html#hubbard-brook-comparisons"><i class="fa fa-check"></i><b>9.8</b> Hubbard Brook comparisons</a></li>
+<li class="chapter" data-level="9.9" data-path="sdms-glm.html"><a href="sdms-glm.html#model-comparison-table-first-data-set"><i class="fa fa-check"></i><b>9.9</b> Model comparison table (first data set)</a></li>
+<li class="chapter" data-level="9.10" data-path="shape-files.html"><a href="shape-files.html#save"><i class="fa fa-check"></i><b>9.10</b> Save</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">SDMs - Trillium Example</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="sdms-gam" class="section level1">
+<h1><span class="header-section-number">Chapter 9</span> SDMs – GAM</h1>
+<p>A generalized additive model (GAM) is similar to a linear regression model except that the relationship between the response variable and explanatory variables is flexible. For example,</p>
+<p><span class="math display">\[y = \alpha + s_1(x_1) + s_2(x_2) + \epsilon\]</span>
+where <span class="math inline">\(s()\)</span> is a function. The code for fitting the GAMs will be similar in structure to the code for fitting the GLMs and the same evaluation metrics can be calculated.</p>
+<div id="set-up" class="section level2">
+<h2><span class="header-section-number">9.1</span> Set-up</h2>
+<p>This chapter will use the following libraries.</p>
+<div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb162-1"><a href="sdms-gam.html#cb162-1"></a><span class="kw">library</span>(biomod2)</span>
+<span id="cb162-2"><a href="sdms-gam.html#cb162-2"></a><span class="kw">library</span>(gam)</span>
+<span id="cb162-3"><a href="sdms-gam.html#cb162-3"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb162-4"><a href="sdms-gam.html#cb162-4"></a><span class="kw">library</span>(ecospat)</span>
+<span id="cb162-5"><a href="sdms-gam.html#cb162-5"></a><span class="kw">library</span>(sp)</span>
+<span id="cb162-6"><a href="sdms-gam.html#cb162-6"></a><span class="kw">library</span>(raster)</span></code></pre></div>
+<div id="load-the-data-and-glm-models" class="section level3">
+<h3><span class="header-section-number">9.1.1</span> Load the data and GLM models</h3>
+<p>Load the shapefiles, Trillium data and variables raster stack created earlier.</p>
+<div class="sourceCode" id="cb163"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb163-1"><a href="sdms-gam.html#cb163-1"></a><span class="co"># The VT, NH and HB outlines</span></span>
+<span id="cb163-2"><a href="sdms-gam.html#cb163-2"></a><span class="kw">load</span>(<span class="st">&quot;data/shapefiles.RData&quot;</span>)</span>
+<span id="cb163-3"><a href="sdms-gam.html#cb163-3"></a></span>
+<span id="cb163-4"><a href="sdms-gam.html#cb163-4"></a><span class="co"># The original observation data lat/lon</span></span>
+<span id="cb163-5"><a href="sdms-gam.html#cb163-5"></a><span class="kw">load</span>(<span class="st">&quot;data/trillium_presences.RData&quot;</span>)</span>
+<span id="cb163-6"><a href="sdms-gam.html#cb163-6"></a></span>
+<span id="cb163-7"><a href="sdms-gam.html#cb163-7"></a><span class="co"># All the data needed to fit the SDM The grid cells with</span></span>
+<span id="cb163-8"><a href="sdms-gam.html#cb163-8"></a><span class="co"># presences and background grid cells w predictors The</span></span>
+<span id="cb163-9"><a href="sdms-gam.html#cb163-9"></a><span class="co"># variables that I&#39;ll use for various models</span></span>
+<span id="cb163-10"><a href="sdms-gam.html#cb163-10"></a><span class="kw">load</span>(<span class="st">&quot;data/sdm_data.RData&quot;</span>)</span>
+<span id="cb163-11"><a href="sdms-gam.html#cb163-11"></a></span>
+<span id="cb163-12"><a href="sdms-gam.html#cb163-12"></a><span class="co"># Raster of all predictors</span></span>
+<span id="cb163-13"><a href="sdms-gam.html#cb163-13"></a>allVars &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">brick</span>(<span class="st">&quot;data/allVars.grd&quot;</span>)</span></code></pre></div>
+<p>Load the model list from the GLM chapter plus the <code>pm.plot</code> function.</p>
+<div class="sourceCode" id="cb164"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb164-1"><a href="sdms-gam.html#cb164-1"></a><span class="kw">load</span>(<span class="st">&quot;modellist.RData&quot;</span>)</span></code></pre></div>
+</div>
+<div id="first-data-set" class="section level3">
+<h3><span class="header-section-number">9.1.2</span> First data set</h3>
+<p>For the first fit, I use the first data set in my training/test list.</p>
+<div class="sourceCode" id="cb165"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb165-1"><a href="sdms-gam.html#cb165-1"></a>traindat &lt;-<span class="st"> </span>traindatlist[[<span class="dv">1</span>]]<span class="op">$</span>traindat</span>
+<span id="cb165-2"><a href="sdms-gam.html#cb165-2"></a>pres_test &lt;-<span class="st"> </span>traindatlist[[<span class="dv">1</span>]]<span class="op">$</span>pres_test</span>
+<span id="cb165-3"><a href="sdms-gam.html#cb165-3"></a>backg_test &lt;-<span class="st"> </span>traindatlist[[<span class="dv">1</span>]]<span class="op">$</span>backg_test</span></code></pre></div>
+</div>
+</div>
+<div id="fit-gam" class="section level2">
+<h2><span class="header-section-number">9.2</span> Fit GAM</h2>
+<p>The GAM formula in R looks like <code>response ~ s(var1, sm) + s(var2, sm)</code>. The <code>s()</code> is the spline function and allows the response to be non-linear. The second number, <code>sm</code> is the amount of smoothing and the default way you specify this is different for the <code>gam::gam()</code> function versus the <code>mcgv::gam()</code> function. Here I use <code>gam::gam()</code> and use the <code>df</code> argument (default). <code>df=1</code> would be linear.</p>
+<p>I will write a function to make my formula for the <code>gam()</code> call. That way I don’t have to make it manually.</p>
+<div class="sourceCode" id="cb166"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb166-1"><a href="sdms-gam.html#cb166-1"></a>gamfm &lt;-<span class="st"> </span><span class="cf">function</span>(x, df, <span class="dt">f =</span> <span class="ot">NULL</span>) {</span>
+<span id="cb166-2"><a href="sdms-gam.html#cb166-2"></a>    <span class="cf">if</span> (<span class="kw">length</span>(f) <span class="op">!=</span><span class="st"> </span><span class="dv">0</span>) </span>
+<span id="cb166-3"><a href="sdms-gam.html#cb166-3"></a>        x &lt;-<span class="st"> </span>x[x <span class="op">!=</span><span class="st"> </span>f]</span>
+<span id="cb166-4"><a href="sdms-gam.html#cb166-4"></a>    fm &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;s(&quot;</span>, x, <span class="st">&quot;, &quot;</span>, df, <span class="st">&quot;)&quot;</span>, <span class="dt">collapse =</span> <span class="st">&quot; + &quot;</span>)</span>
+<span id="cb166-5"><a href="sdms-gam.html#cb166-5"></a>    <span class="cf">if</span> (<span class="kw">length</span>(f) <span class="op">!=</span><span class="st"> </span><span class="dv">0</span>) {</span>
+<span id="cb166-6"><a href="sdms-gam.html#cb166-6"></a>        ff &lt;-<span class="st"> </span><span class="kw">paste0</span>(f, <span class="dt">collapse =</span> <span class="st">&quot; + &quot;</span>)</span>
+<span id="cb166-7"><a href="sdms-gam.html#cb166-7"></a>        fm &lt;-<span class="st"> </span><span class="kw">paste</span>(fm, ff, <span class="dt">sep =</span> <span class="st">&quot;+&quot;</span>)</span>
+<span id="cb166-8"><a href="sdms-gam.html#cb166-8"></a>    }</span>
+<span id="cb166-9"><a href="sdms-gam.html#cb166-9"></a>    fm &lt;-<span class="st"> </span><span class="kw">as.formula</span>(<span class="kw">paste</span>(<span class="st">&quot;pa ~&quot;</span>, fm))</span>
+<span id="cb166-10"><a href="sdms-gam.html#cb166-10"></a>    <span class="kw">return</span>(fm)</span>
+<span id="cb166-11"><a href="sdms-gam.html#cb166-11"></a>}</span></code></pre></div>
+<p>For the GAM model with less smoothing (<code>df=2</code>), the formula is</p>
+<div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb167-1"><a href="sdms-gam.html#cb167-1"></a><span class="kw">gamfm</span>(envvars, <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>pa ~ s(mean.temp, 2) + s(temp.diurnal.range, 2) + s(temp.seasonality, 
+    2) + s(precip.warm.qtr, 2) + s(precip.cold.qtr, 2)
+&lt;environment: 0x7fc874d77b20&gt;</code></pre>
+<p>Notice how the variables are in a <code>s()</code> function. That is the spline function.</p>
+<p>Because I am specifying what variables to use in the model formula, I don’t need to subset the training data. I can just pass the whole data frame in.</p>
+<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb169-1"><a href="sdms-gam.html#cb169-1"></a>gamEnv2 &lt;-<span class="st"> </span>gam<span class="op">::</span><span class="kw">gam</span>(<span class="dt">formula =</span> <span class="kw">gamfm</span>(envvars, <span class="dv">2</span>), <span class="dt">data =</span> traindat, </span>
+<span id="cb169-2"><a href="sdms-gam.html#cb169-2"></a>    <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</span></code></pre></div>
+<p>For the more flexible model, I use</p>
+<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="sdms-gam.html#cb170-1"></a>gamEnv4 &lt;-<span class="st"> </span>gam<span class="op">::</span><span class="kw">gam</span>(<span class="dt">formula =</span> <span class="kw">gamfm</span>(envvars, <span class="dv">4</span>), <span class="dt">data =</span> traindat, </span>
+<span id="cb170-2"><a href="sdms-gam.html#cb170-2"></a>    <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</span></code></pre></div>
+<p>Save models.</p>
+<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="sdms-gam.html#cb171-1"></a>mod &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;gamEnv&quot;</span>, <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>))</span>
+<span id="cb171-2"><a href="sdms-gam.html#cb171-2"></a>desc &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;GAM - Environmental variables df=&quot;</span>, <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>))</span>
+<span id="cb171-3"><a href="sdms-gam.html#cb171-3"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) {</span>
+<span id="cb171-4"><a href="sdms-gam.html#cb171-4"></a>    pm &lt;-<span class="st"> </span><span class="kw">predict</span>(allVars, <span class="kw">get</span>(mod[i]), <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb171-5"><a href="sdms-gam.html#cb171-5"></a>    bindex &lt;-<span class="st"> </span>ecospat<span class="op">::</span><span class="kw">ecospat.boyce</span>(pm, <span class="kw">cbind</span>(pres_test<span class="op">$</span>lon, </span>
+<span id="cb171-6"><a href="sdms-gam.html#cb171-6"></a>        pres_test<span class="op">$</span>lat), <span class="dt">PEplot =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb171-7"><a href="sdms-gam.html#cb171-7"></a>    modellist[[mod[i]]] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">model =</span> <span class="kw">get</span>(mod[i]), <span class="dt">name =</span> mod[i], </span>
+<span id="cb171-8"><a href="sdms-gam.html#cb171-8"></a>        <span class="dt">desc =</span> desc[i], <span class="dt">terms =</span> envvars, <span class="dt">bindex =</span> bindex)</span>
+<span id="cb171-9"><a href="sdms-gam.html#cb171-9"></a>}</span></code></pre></div>
+<p>We can compute the same output and diagnostics as we did for GLMs.</p>
+<div id="predictions" class="section level3">
+<h3><span class="header-section-number">9.2.1</span> Predictions</h3>
+<div class="sourceCode" id="cb172"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb172-1"><a href="sdms-gam.html#cb172-1"></a>pm &lt;-<span class="st"> </span><span class="kw">predict</span>(allVars, gamEnv4, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb172-2"><a href="sdms-gam.html#cb172-2"></a><span class="kw">pm.plot</span>(pm)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-141-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>Let’s zoom in on Hubbard Brook.</p>
+<div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb173-1"><a href="sdms-gam.html#cb173-1"></a>xlims &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="fl">71.9</span>, <span class="fl">-71.6</span>)</span>
+<span id="cb173-2"><a href="sdms-gam.html#cb173-2"></a>ylims &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">43.875</span>, <span class="dv">44</span>)</span>
+<span id="cb173-3"><a href="sdms-gam.html#cb173-3"></a><span class="kw">pm.plot</span>(pm, <span class="dt">main =</span> <span class="st">&quot;Environmental Variables&quot;</span>, <span class="dt">xlim =</span> xlims, <span class="dt">ylim =</span> ylims, </span>
+<span id="cb173-4"><a href="sdms-gam.html#cb173-4"></a>    <span class="dt">scale.max =</span> <span class="fl">0.5</span>)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-142-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="response-curves" class="section level3">
+<h3><span class="header-section-number">9.2.2</span> Response curves</h3>
+<p>This shows the relationship between the predictor variable and the probability of presence.</p>
+<div class="sourceCode" id="cb174"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb174-1"><a href="sdms-gam.html#cb174-1"></a>rp &lt;-<span class="st"> </span>biomod2<span class="op">::</span><span class="kw">response.plot2</span>(<span class="dt">models =</span> <span class="kw">c</span>(<span class="st">&quot;gamEnv4&quot;</span>, <span class="st">&quot;gamEnv2&quot;</span>), </span>
+<span id="cb174-2"><a href="sdms-gam.html#cb174-2"></a>    <span class="dt">Data =</span> traindat, <span class="dt">show.variables =</span> envvars, <span class="dt">fixed.var.metric =</span> <span class="st">&quot;mean&quot;</span>, </span>
+<span id="cb174-3"><a href="sdms-gam.html#cb174-3"></a>    <span class="dt">use.formal.names =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<pre><code>Warning in which.max(sum_level): NAs introduced by coercion</code></pre>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-143-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>Since <code>rp</code> is a data frame in long form, we can also use ggplot to plot.</p>
+<div class="sourceCode" id="cb176"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb176-1"><a href="sdms-gam.html#cb176-1"></a>p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(rp, <span class="kw">aes</span>(<span class="dt">x =</span> expl.val, <span class="dt">y =</span> pred.val, <span class="dt">lty =</span> pred.name)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb176-2"><a href="sdms-gam.html#cb176-2"></a><span class="st">    </span><span class="kw">geom_line</span>() <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;prob of occ&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">facet_wrap</span>(<span class="op">~</span>expl.name, </span>
+<span id="cb176-3"><a href="sdms-gam.html#cb176-3"></a>    <span class="dt">scales =</span> <span class="st">&quot;free_x&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;Environmental variables&quot;</span>)</span>
+<span id="cb176-4"><a href="sdms-gam.html#cb176-4"></a>p</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-144-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="auc-curves" class="section level3">
+<h3><span class="header-section-number">9.2.3</span> AUC Curves</h3>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="sdms-gam.html#cb177-1"></a>erf &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">evaluate</span>(pres_test, backg_test, <span class="dt">model =</span> gamEnv4)</span>
+<span id="cb177-2"><a href="sdms-gam.html#cb177-2"></a><span class="kw">plot</span>(erf, <span class="st">&quot;ROC&quot;</span>)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-145-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="boyce-index" class="section level3">
+<h3><span class="header-section-number">9.2.4</span> Boyce Index</h3>
+<div class="sourceCode" id="cb178"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb178-1"><a href="sdms-gam.html#cb178-1"></a><span class="kw">predict</span>(allVars, gamEnv4, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb178-2"><a href="sdms-gam.html#cb178-2"></a>ecospat<span class="op">::</span><span class="kw">ecospat.boyce</span>(pm, <span class="kw">cbind</span>(pres_test<span class="op">$</span>lon, pres_test<span class="op">$</span>lat))</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-146-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="variable-importance" class="section level3">
+<h3><span class="header-section-number">9.2.5</span> Variable importance</h3>
+<p>This is a measure of how much each variable singly impacts the fit.</p>
+<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="sdms-gam.html#cb179-1"></a>varimp &lt;-<span class="st"> </span>biomod2<span class="op">::</span><span class="kw">variables_importance</span>(gamEnv4, <span class="dt">data =</span> traindat)<span class="op">$</span>mat</span>
+<span id="cb179-2"><a href="sdms-gam.html#cb179-2"></a>varimp[varimp <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.01</span>, ]</span></code></pre></div>
+<pre><code>         mean.temp temp.diurnal.range   temp.seasonality    precip.warm.qtr 
+          0.202113           0.098968           0.346172           0.328699 
+   precip.cold.qtr 
+          0.109452 </code></pre>
+</div>
+</div>
+<div id="effect-size-curves" class="section level2">
+<h2><span class="header-section-number">9.3</span> Effect size curves</h2>
+<p>Let’s look at the GAM effect size curves for the model with 5 environmental variables. The effect curves are non-linear.</p>
+<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb181-1"><a href="sdms-gam.html#cb181-1"></a>po &lt;-<span class="st"> </span>gam<span class="op">:::</span><span class="kw">preplot.Gam</span>(gamEnv4, <span class="dt">terms =</span> <span class="kw">attr</span>(<span class="kw">terms</span>(gamEnv4), </span>
+<span id="cb181-2"><a href="sdms-gam.html#cb181-2"></a>    <span class="st">&quot;term.labels&quot;</span>))</span>
+<span id="cb181-3"><a href="sdms-gam.html#cb181-3"></a>dfenv &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="ot">NULL</span>, <span class="dt">y =</span> <span class="ot">NULL</span>, <span class="dt">se =</span> <span class="ot">NULL</span>, <span class="dt">variable =</span> <span class="ot">NULL</span>)</span>
+<span id="cb181-4"><a href="sdms-gam.html#cb181-4"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">names</span>(po)) {</span>
+<span id="cb181-5"><a href="sdms-gam.html#cb181-5"></a>    vname &lt;-<span class="st"> </span>stringr<span class="op">::</span><span class="kw">str_replace</span>(i, <span class="st">&quot;s[(]&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb181-6"><a href="sdms-gam.html#cb181-6"></a>    vname &lt;-<span class="st"> </span>stringr<span class="op">::</span><span class="kw">str_replace</span>(vname, <span class="st">&quot;, 4[)]&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb181-7"><a href="sdms-gam.html#cb181-7"></a>    a &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> po[[i]]<span class="op">$</span>x, <span class="dt">y =</span> po[[i]]<span class="op">$</span>y, <span class="dt">se =</span> po[[i]]<span class="op">$</span>se.y, </span>
+<span id="cb181-8"><a href="sdms-gam.html#cb181-8"></a>        <span class="dt">variable =</span> vname)</span>
+<span id="cb181-9"><a href="sdms-gam.html#cb181-9"></a>    dfenv &lt;-<span class="st"> </span><span class="kw">rbind</span>(dfenv, a)</span>
+<span id="cb181-10"><a href="sdms-gam.html#cb181-10"></a>}</span>
+<span id="cb181-11"><a href="sdms-gam.html#cb181-11"></a>p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(dfenv, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_ribbon</span>(<span class="kw">aes</span>(<span class="dt">ymin =</span> y <span class="op">+</span><span class="st"> </span></span>
+<span id="cb181-12"><a href="sdms-gam.html#cb181-12"></a><span class="st">    </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>se, <span class="dt">ymax =</span> y <span class="op">-</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>se), <span class="dt">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb181-13"><a href="sdms-gam.html#cb181-13"></a><span class="st">    </span><span class="kw">ylab</span>(<span class="st">&quot;effect size&quot;</span>)</span>
+<span id="cb181-14"><a href="sdms-gam.html#cb181-14"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">facet_wrap</span>(<span class="op">~</span>variable, <span class="dt">scales =</span> <span class="st">&quot;free&quot;</span>)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-148-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="more-gam-fits" class="section level2">
+<h2><span class="header-section-number">9.4</span> More GAM fits</h2>
+<p>Now I repeat the model fitting code for the other sets of variables and store to my model list.</p>
+<div id="topographical-only-model" class="section level3">
+<h3><span class="header-section-number">9.4.1</span> Topographical only model</h3>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="sdms-gam.html#cb182-1"></a>gamTopo2 &lt;-<span class="st"> </span>gam<span class="op">::</span><span class="kw">gam</span>(<span class="dt">formula =</span> <span class="kw">gamfm</span>(topovars, <span class="dv">2</span>), <span class="dt">data =</span> traindat, </span>
+<span id="cb182-2"><a href="sdms-gam.html#cb182-2"></a>    <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</span></code></pre></div>
+<pre><code>Warning in model.matrix.default(mt, mf, contrasts): non-list contrasts argument
+ignored</code></pre>
+<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="sdms-gam.html#cb184-1"></a>gamTopo4 &lt;-<span class="st"> </span>gam<span class="op">::</span><span class="kw">gam</span>(<span class="dt">formula =</span> <span class="kw">gamfm</span>(topovars, <span class="dv">4</span>), <span class="dt">data =</span> traindat, </span>
+<span id="cb184-2"><a href="sdms-gam.html#cb184-2"></a>    <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</span></code></pre></div>
+<pre><code>Warning in model.matrix.default(mt, mf, contrasts): non-list contrasts argument
+ignored</code></pre>
+<p>Save models.</p>
+<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb186-1"><a href="sdms-gam.html#cb186-1"></a>mod &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;gamTopo&quot;</span>, <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>))</span>
+<span id="cb186-2"><a href="sdms-gam.html#cb186-2"></a>desc &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;GAM - Topo variables df=&quot;</span>, <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>))</span>
+<span id="cb186-3"><a href="sdms-gam.html#cb186-3"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) {</span>
+<span id="cb186-4"><a href="sdms-gam.html#cb186-4"></a>    pm &lt;-<span class="st"> </span><span class="kw">predict</span>(allVars, <span class="kw">get</span>(mod[i]), <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb186-5"><a href="sdms-gam.html#cb186-5"></a>    bindex &lt;-<span class="st"> </span>ecospat<span class="op">::</span><span class="kw">ecospat.boyce</span>(pm, <span class="kw">cbind</span>(pres_test<span class="op">$</span>lon, </span>
+<span id="cb186-6"><a href="sdms-gam.html#cb186-6"></a>        pres_test<span class="op">$</span>lat), <span class="dt">PEplot =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb186-7"><a href="sdms-gam.html#cb186-7"></a>    modellist[[mod[i]]] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">model =</span> <span class="kw">get</span>(mod[i]), <span class="dt">name =</span> mod[i], </span>
+<span id="cb186-8"><a href="sdms-gam.html#cb186-8"></a>        <span class="dt">desc =</span> desc[i], <span class="dt">terms =</span> topovars, <span class="dt">bindex =</span> bindex)</span>
+<span id="cb186-9"><a href="sdms-gam.html#cb186-9"></a>}</span></code></pre></div>
+</div>
+<div id="land-cover-model" class="section level3">
+<h3><span class="header-section-number">9.4.2</span> Land cover model</h3>
+<div class="sourceCode" id="cb187"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb187-1"><a href="sdms-gam.html#cb187-1"></a>gamLC2 &lt;-<span class="st"> </span>gam<span class="op">::</span><span class="kw">gam</span>(<span class="dt">formula =</span> <span class="kw">gamfm</span>(lcvars, <span class="dv">2</span>), <span class="dt">data =</span> traindat, </span>
+<span id="cb187-2"><a href="sdms-gam.html#cb187-2"></a>    <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</span></code></pre></div>
+<pre><code>Warning in model.matrix.default(mt, mf, contrasts): non-list contrasts argument
+ignored</code></pre>
+<div class="sourceCode" id="cb189"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb189-1"><a href="sdms-gam.html#cb189-1"></a>gamLC4 &lt;-<span class="st"> </span>gam<span class="op">::</span><span class="kw">gam</span>(<span class="dt">formula =</span> <span class="kw">gamfm</span>(lcvars, <span class="dv">4</span>), <span class="dt">data =</span> traindat, </span>
+<span id="cb189-2"><a href="sdms-gam.html#cb189-2"></a>    <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</span></code></pre></div>
+<pre><code>Warning in model.matrix.default(mt, mf, contrasts): non-list contrasts argument
+ignored</code></pre>
+<p>Save models.</p>
+<div class="sourceCode" id="cb191"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb191-1"><a href="sdms-gam.html#cb191-1"></a>mod &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;gamLC&quot;</span>, <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>))</span>
+<span id="cb191-2"><a href="sdms-gam.html#cb191-2"></a>desc &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;GAM - Tree Cover variables df=&quot;</span>, <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>))</span>
+<span id="cb191-3"><a href="sdms-gam.html#cb191-3"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) {</span>
+<span id="cb191-4"><a href="sdms-gam.html#cb191-4"></a>    pm &lt;-<span class="st"> </span><span class="kw">predict</span>(allVars, <span class="kw">get</span>(mod[i]), <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb191-5"><a href="sdms-gam.html#cb191-5"></a>    bindex &lt;-<span class="st"> </span>ecospat<span class="op">::</span><span class="kw">ecospat.boyce</span>(pm, <span class="kw">cbind</span>(pres_test<span class="op">$</span>lon, </span>
+<span id="cb191-6"><a href="sdms-gam.html#cb191-6"></a>        pres_test<span class="op">$</span>lat), <span class="dt">PEplot =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb191-7"><a href="sdms-gam.html#cb191-7"></a>    modellist[[mod[i]]] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">model =</span> <span class="kw">get</span>(mod[i]), <span class="dt">name =</span> mod[i], </span>
+<span id="cb191-8"><a href="sdms-gam.html#cb191-8"></a>        <span class="dt">desc =</span> desc[i], <span class="dt">terms =</span> lcvars, <span class="dt">bindex =</span> bindex)</span>
+<span id="cb191-9"><a href="sdms-gam.html#cb191-9"></a>}</span></code></pre></div>
+</div>
+<div id="minimal-gam-model" class="section level3">
+<h3><span class="header-section-number">9.4.3</span> Minimal GAM Model</h3>
+<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="sdms-gam.html#cb192-1"></a>gamEnvMin &lt;-<span class="st"> </span>gam<span class="op">::</span><span class="kw">gam</span>(<span class="dt">formula =</span> <span class="kw">gamfm</span>(minEnvVars, <span class="dv">4</span>), <span class="dt">data =</span> traindat, </span>
+<span id="cb192-2"><a href="sdms-gam.html#cb192-2"></a>    <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</span></code></pre></div>
+<pre><code>Warning in model.matrix.default(mt, mf, contrasts): non-list contrasts argument
+ignored</code></pre>
+<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="sdms-gam.html#cb194-1"></a>pm &lt;-<span class="st"> </span><span class="kw">predict</span>(allVars, gamEnvMin, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb194-2"><a href="sdms-gam.html#cb194-2"></a>bindex &lt;-<span class="st"> </span>ecospat<span class="op">::</span><span class="kw">ecospat.boyce</span>(pm, <span class="kw">cbind</span>(pres_test<span class="op">$</span>lon, pres_test<span class="op">$</span>lat), </span>
+<span id="cb194-3"><a href="sdms-gam.html#cb194-3"></a>    <span class="dt">PEplot =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb194-4"><a href="sdms-gam.html#cb194-4"></a>modellist[[<span class="st">&quot;gamEnvMin&quot;</span>]] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">model =</span> gamEnvMin, <span class="dt">name =</span> <span class="st">&quot;gamEnvMin&quot;</span>, </span>
+<span id="cb194-5"><a href="sdms-gam.html#cb194-5"></a>    <span class="dt">desc =</span> <span class="st">&quot;GAM - Minimal&quot;</span>, <span class="dt">terms =</span> minEnvVars, <span class="dt">bindex =</span> bindex)</span></code></pre></div>
+</div>
+<div id="vif-vars" class="section level3">
+<h3><span class="header-section-number">9.4.4</span> VIF Vars</h3>
+<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb195-1"><a href="sdms-gam.html#cb195-1"></a>gamVIF2 &lt;-<span class="st"> </span>gam<span class="op">::</span><span class="kw">gam</span>(<span class="dt">formula =</span> <span class="kw">gamfm</span>(vifvars, <span class="dv">2</span>), <span class="dt">data =</span> traindat, </span>
+<span id="cb195-2"><a href="sdms-gam.html#cb195-2"></a>    <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</span></code></pre></div>
+<pre><code>Warning in model.matrix.default(mt, mf, contrasts): non-list contrasts argument
+ignored</code></pre>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="sdms-gam.html#cb197-1"></a>gamVIF4 &lt;-<span class="st"> </span>gam<span class="op">::</span><span class="kw">gam</span>(<span class="dt">formula =</span> <span class="kw">gamfm</span>(vifvars, <span class="dv">4</span>), <span class="dt">data =</span> traindat, </span>
+<span id="cb197-2"><a href="sdms-gam.html#cb197-2"></a>    <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</span></code></pre></div>
+<pre><code>Warning in model.matrix.default(mt, mf, contrasts): non-list contrasts argument
+ignored</code></pre>
+<p>Save models.</p>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="sdms-gam.html#cb199-1"></a>mod &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;gamVIF&quot;</span>, <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>))</span>
+<span id="cb199-2"><a href="sdms-gam.html#cb199-2"></a>desc &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;GAM - VIF variables df=&quot;</span>, <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>))</span>
+<span id="cb199-3"><a href="sdms-gam.html#cb199-3"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) {</span>
+<span id="cb199-4"><a href="sdms-gam.html#cb199-4"></a>    pm &lt;-<span class="st"> </span><span class="kw">predict</span>(allVars, <span class="kw">get</span>(mod[i]), <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb199-5"><a href="sdms-gam.html#cb199-5"></a>    bindex &lt;-<span class="st"> </span>ecospat<span class="op">::</span><span class="kw">ecospat.boyce</span>(pm, <span class="kw">cbind</span>(pres_test<span class="op">$</span>lon, </span>
+<span id="cb199-6"><a href="sdms-gam.html#cb199-6"></a>        pres_test<span class="op">$</span>lat), <span class="dt">PEplot =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb199-7"><a href="sdms-gam.html#cb199-7"></a>    modellist[[mod[i]]] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">model =</span> <span class="kw">get</span>(mod[i]), <span class="dt">name =</span> mod[i], </span>
+<span id="cb199-8"><a href="sdms-gam.html#cb199-8"></a>        <span class="dt">desc =</span> desc[i], <span class="dt">terms =</span> vifvars, <span class="dt">bindex =</span> bindex)</span>
+<span id="cb199-9"><a href="sdms-gam.html#cb199-9"></a>}</span></code></pre></div>
+</div>
+</div>
+<div id="model-comparison" class="section level2">
+<h2><span class="header-section-number">9.5</span> Model Comparison</h2>
+<div id="predictions-1" class="section level3">
+<h3><span class="header-section-number">9.5.1</span> Predictions</h3>
+<p>Compare the topo, LC and environmenal predictions.</p>
+<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="sdms-gam.html#cb200-1"></a>pg.topo &lt;-<span class="st"> </span><span class="kw">predict</span>(allVars, gamTopo4, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb200-2"><a href="sdms-gam.html#cb200-2"></a>pg.env &lt;-<span class="st"> </span><span class="kw">predict</span>(allVars, gamEnv4, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb200-3"><a href="sdms-gam.html#cb200-3"></a>pg.lc &lt;-<span class="st"> </span><span class="kw">predict</span>(allVars, gamLC4, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb200-4"><a href="sdms-gam.html#cb200-4"></a>pg.min &lt;-<span class="st"> </span><span class="kw">predict</span>(allVars, gamEnvMin, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span></code></pre></div>
+<p>Now make the prediction plots.</p>
+<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb201-1"><a href="sdms-gam.html#cb201-1"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb201-2"><a href="sdms-gam.html#cb201-2"></a>mar &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>)</span>
+<span id="cb201-3"><a href="sdms-gam.html#cb201-3"></a><span class="kw">pm.plot</span>(pg.topo, <span class="dt">main =</span> <span class="st">&quot;Topographical Variables&quot;</span>, <span class="dt">legend =</span> <span class="ot">FALSE</span>, </span>
+<span id="cb201-4"><a href="sdms-gam.html#cb201-4"></a>    <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">box =</span> <span class="ot">FALSE</span>, <span class="dt">mar =</span> mar)</span>
+<span id="cb201-5"><a href="sdms-gam.html#cb201-5"></a><span class="kw">pm.plot</span>(pg.env, <span class="dt">main =</span> <span class="st">&quot;Environmental Variables&quot;</span>, <span class="dt">legend =</span> <span class="ot">FALSE</span>, </span>
+<span id="cb201-6"><a href="sdms-gam.html#cb201-6"></a>    <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">box =</span> <span class="ot">FALSE</span>, <span class="dt">mar =</span> mar)</span>
+<span id="cb201-7"><a href="sdms-gam.html#cb201-7"></a><span class="kw">pm.plot</span>(pg.lc, <span class="dt">main =</span> <span class="st">&quot;Tree Cover Variables&quot;</span>, <span class="dt">legend =</span> <span class="ot">FALSE</span>, </span>
+<span id="cb201-8"><a href="sdms-gam.html#cb201-8"></a>    <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">box =</span> <span class="ot">FALSE</span>, <span class="dt">mar =</span> mar)</span>
+<span id="cb201-9"><a href="sdms-gam.html#cb201-9"></a><span class="kw">pm.plot</span>(pg.min, <span class="dt">main =</span> <span class="st">&quot;Three Env Variables&quot;</span>, <span class="dt">legend =</span> <span class="ot">FALSE</span>, </span>
+<span id="cb201-10"><a href="sdms-gam.html#cb201-10"></a>    <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">box =</span> <span class="ot">FALSE</span>, <span class="dt">mar =</span> mar)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-157-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="aucs" class="section level2">
+<h2><span class="header-section-number">9.6</span> AUCs</h2>
+<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="sdms-gam.html#cb202-1"></a>aucs &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">lapply</span>(modellist, <span class="cf">function</span>(x) {</span>
+<span id="cb202-2"><a href="sdms-gam.html#cb202-2"></a>    dismo<span class="op">::</span><span class="kw">evaluate</span>(pres_test, backg_test, <span class="dt">model =</span> x<span class="op">$</span>model)<span class="op">@</span>auc</span>
+<span id="cb202-3"><a href="sdms-gam.html#cb202-3"></a>}))</span>
+<span id="cb202-4"><a href="sdms-gam.html#cb202-4"></a><span class="kw">sort</span>(aucs)</span></code></pre></div>
+<pre><code>glmMinEnv     glmLC gamEnvMin   glmTopo    glmEnv    gamLC2  gamTopo2    gamLC4 
+0.6973802 0.7164793 0.7242727 0.7244628 0.7246033 0.7262231 0.7300413 0.7366860 
+ gamTopo4   glmStep    glmVIF   gamEnv2   gamVIF2   gamEnv4   gamVIF4 
+0.7377025 0.7396198 0.7400992 0.7580661 0.7703471 0.7780496 0.7903223 </code></pre>
+</div>
+<div id="boyce-index---spearman" class="section level2">
+<h2><span class="header-section-number">9.7</span> Boyce Index - Spearman</h2>
+<p>Let’s look at the Spearman correlations from the Boyce Index.</p>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="sdms-gam.html#cb204-1"></a>bis &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">lapply</span>(modellist, <span class="cf">function</span>(x) {</span>
+<span id="cb204-2"><a href="sdms-gam.html#cb204-2"></a>    x<span class="op">$</span>bindex<span class="op">$</span>Spearman.cor</span>
+<span id="cb204-3"><a href="sdms-gam.html#cb204-3"></a>}))</span>
+<span id="cb204-4"><a href="sdms-gam.html#cb204-4"></a><span class="kw">sort</span>(bis)</span></code></pre></div>
+<pre><code>   gamLC4    glmEnv  gamTopo4   glmTopo  gamTopo2 gamEnvMin glmMinEnv   gamVIF4 
+    0.739     0.823     0.855     0.863     0.871     0.876     0.881     0.898 
+    glmLC   gamVIF2    gamLC2   gamEnv4   gamEnv2   glmStep    glmVIF 
+    0.901     0.912     0.915     0.923     0.952     0.956     0.957 </code></pre>
+<p>Compare some of the Boyce Index plots.</p>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="sdms-gam.html#cb206-1"></a>dfb &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="ot">NULL</span>, <span class="dt">y =</span> <span class="ot">NULL</span>, <span class="dt">model =</span> <span class="ot">NULL</span>)</span>
+<span id="cb206-2"><a href="sdms-gam.html#cb206-2"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;gamEnv4&quot;</span>, <span class="st">&quot;gamLC4&quot;</span>, <span class="st">&quot;gamEnvMin&quot;</span>, <span class="st">&quot;gamVIF4&quot;</span>)) {</span>
+<span id="cb206-3"><a href="sdms-gam.html#cb206-3"></a>    bi &lt;-<span class="st"> </span>modellist[[i]]<span class="op">$</span>bindex</span>
+<span id="cb206-4"><a href="sdms-gam.html#cb206-4"></a>    a &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">y =</span> bi<span class="op">$</span>F.ratio, <span class="dt">x =</span> bi<span class="op">$</span>HS, <span class="dt">model =</span> i)</span>
+<span id="cb206-5"><a href="sdms-gam.html#cb206-5"></a>    dfb &lt;-<span class="st"> </span><span class="kw">rbind</span>(dfb, a)</span>
+<span id="cb206-6"><a href="sdms-gam.html#cb206-6"></a>}</span>
+<span id="cb206-7"><a href="sdms-gam.html#cb206-7"></a>dfb<span class="op">$</span>observed &lt;-<span class="st"> &quot;yes&quot;</span></span>
+<span id="cb206-8"><a href="sdms-gam.html#cb206-8"></a>dfb<span class="op">$</span>observed[dfb<span class="op">$</span>y <span class="op">==</span><span class="st"> </span><span class="dv">0</span>] &lt;-<span class="st"> &quot;no&quot;</span></span>
+<span id="cb206-9"><a href="sdms-gam.html#cb206-9"></a>p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(dfb, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">col =</span> observed)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb206-10"><a href="sdms-gam.html#cb206-10"></a><span class="st">    </span><span class="kw">ylab</span>(<span class="st">&quot;Boyce Index&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;Suitability&quot;</span>)</span>
+<span id="cb206-11"><a href="sdms-gam.html#cb206-11"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">facet_wrap</span>(<span class="op">~</span>model, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;Evaluation of the test data performance&quot;</span>)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-160-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="hubbard-brook-comparisons" class="section level2">
+<h2><span class="header-section-number">9.8</span> Hubbard Brook comparisons</h2>
+<p>Let’s zoom in on Hubbard Brook. The observations to the far right are next to the labs. The GLM makes the ridges (boundary) much higher in suitability than the lower elevation brook bottom (center). The model with tree cover also makes the ridge more suitable than the lower elevation.</p>
+<div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb207-1"><a href="sdms-gam.html#cb207-1"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb207-2"><a href="sdms-gam.html#cb207-2"></a>xlims &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="fl">71.9</span>, <span class="fl">-71.6</span>)</span>
+<span id="cb207-3"><a href="sdms-gam.html#cb207-3"></a>ylims &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">43.875</span>, <span class="dv">44</span>)</span>
+<span id="cb207-4"><a href="sdms-gam.html#cb207-4"></a>mar &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">0</span>)</span>
+<span id="cb207-5"><a href="sdms-gam.html#cb207-5"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;gamEnvMin&quot;</span>, <span class="st">&quot;gamEnv4&quot;</span>, <span class="st">&quot;gamLC4&quot;</span>, <span class="st">&quot;gamTopo4&quot;</span>)) {</span>
+<span id="cb207-6"><a href="sdms-gam.html#cb207-6"></a>    pg &lt;-<span class="st"> </span><span class="kw">predict</span>(allVars, modellist[[i]]<span class="op">$</span>model, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb207-7"><a href="sdms-gam.html#cb207-7"></a>    <span class="kw">pm.plot</span>(pg, <span class="dt">main =</span> i, <span class="dt">xlim =</span> xlims, <span class="dt">ylim =</span> ylims, <span class="dt">scale.max =</span> <span class="fl">0.5</span>, </span>
+<span id="cb207-8"><a href="sdms-gam.html#cb207-8"></a>        <span class="dt">box =</span> <span class="ot">FALSE</span>, <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">legend =</span> <span class="ot">FALSE</span>, <span class="dt">mar =</span> mar)</span>
+<span id="cb207-9"><a href="sdms-gam.html#cb207-9"></a>}</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-161-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>Tree composition in Hubbard Brook also tracks these environmental conditions it looks like.
+<img src="images/hb_forest_composition.png" width="400" alt="Hubbard Brook forest composition" /></p>
+<div id="response-curves-1" class="section level3">
+<h3><span class="header-section-number">9.8.1</span> Response curves</h3>
+<p>We can compare the response curves for models which have the same variables.</p>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="sdms-gam.html#cb208-1"></a>rp &lt;-<span class="st"> </span>biomod2<span class="op">::</span><span class="kw">response.plot2</span>(<span class="dt">models =</span> <span class="kw">c</span>(<span class="st">&quot;gamEnv4&quot;</span>, <span class="st">&quot;gamLC4&quot;</span>, </span>
+<span id="cb208-2"><a href="sdms-gam.html#cb208-2"></a>    <span class="st">&quot;gamVIF4&quot;</span>), <span class="dt">Data =</span> traindat, <span class="dt">show.variables =</span> envvars, <span class="dt">fixed.var.metric =</span> <span class="st">&quot;mean&quot;</span>, </span>
+<span id="cb208-3"><a href="sdms-gam.html#cb208-3"></a>    <span class="dt">plot =</span> <span class="ot">FALSE</span>, <span class="dt">use.formal.names =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<pre><code>Warning in which.max(sum_level): NAs introduced by coercion</code></pre>
+<p>The models don’have all the variables. I will put NAs if the model doesn’t have that variable.</p>
+<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="sdms-gam.html#cb210-1"></a>rp<span class="op">$</span>include &lt;-<span class="st"> </span><span class="kw">apply</span>(rp, <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
+<span id="cb210-2"><a href="sdms-gam.html#cb210-2"></a>    x[<span class="dv">2</span>] <span class="op">%in%</span><span class="st"> </span>modellist[[x[<span class="dv">4</span>]]]<span class="op">$</span>terms</span>
+<span id="cb210-3"><a href="sdms-gam.html#cb210-3"></a>})</span>
+<span id="cb210-4"><a href="sdms-gam.html#cb210-4"></a>rp<span class="op">$</span>pred.val[<span class="op">!</span>rp<span class="op">$</span>include] &lt;-<span class="st"> </span><span class="ot">NA</span></span></code></pre></div>
+<div class="sourceCode" id="cb211"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb211-1"><a href="sdms-gam.html#cb211-1"></a>gg.rp &lt;-<span class="st"> </span><span class="kw">ggplot</span>(rp, <span class="kw">aes</span>(<span class="dt">x =</span> expl.val, <span class="dt">y =</span> pred.val, <span class="dt">col =</span> pred.name)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb211-2"><a href="sdms-gam.html#cb211-2"></a><span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;prob of occ&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb211-3"><a href="sdms-gam.html#cb211-3"></a><span class="st">    </span><span class="kw">facet_wrap</span>(<span class="op">~</span>expl.name, <span class="dt">scales =</span> <span class="st">&quot;free_x&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;Environmental variables&quot;</span>)</span>
+<span id="cb211-4"><a href="sdms-gam.html#cb211-4"></a><span class="kw">print</span>(gg.rp)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-164-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="model-comparison-table-first-data-set" class="section level2">
+<h2><span class="header-section-number">9.9</span> Model comparison table (first data set)</h2>
+<p>Compare AICs, Spearman Correlation for the models with the first data set (in <code>traindatlist</code>).</p>
+<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb212-1"><a href="sdms-gam.html#cb212-1"></a>df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">name =</span> <span class="kw">unlist</span>(<span class="kw">lapply</span>(modellist, <span class="cf">function</span>(x) {</span>
+<span id="cb212-2"><a href="sdms-gam.html#cb212-2"></a>    x<span class="op">$</span>name</span>
+<span id="cb212-3"><a href="sdms-gam.html#cb212-3"></a>})), <span class="dt">Spearman =</span> <span class="kw">unlist</span>(<span class="kw">lapply</span>(modellist, <span class="cf">function</span>(x) {</span>
+<span id="cb212-4"><a href="sdms-gam.html#cb212-4"></a>    x<span class="op">$</span>bindex<span class="op">$</span>Spearman.cor</span>
+<span id="cb212-5"><a href="sdms-gam.html#cb212-5"></a>})), <span class="dt">AUC =</span> <span class="kw">unlist</span>(<span class="kw">lapply</span>(modellist, <span class="cf">function</span>(x) {</span>
+<span id="cb212-6"><a href="sdms-gam.html#cb212-6"></a>    dismo<span class="op">::</span><span class="kw">evaluate</span>(pres_test, backg_test, <span class="dt">model =</span> x<span class="op">$</span>model)<span class="op">@</span>auc</span>
+<span id="cb212-7"><a href="sdms-gam.html#cb212-7"></a>})), <span class="dt">AIC =</span> <span class="kw">unlist</span>(<span class="kw">lapply</span>(modellist, <span class="cf">function</span>(x) {</span>
+<span id="cb212-8"><a href="sdms-gam.html#cb212-8"></a>    <span class="kw">AIC</span>(x<span class="op">$</span>model)</span>
+<span id="cb212-9"><a href="sdms-gam.html#cb212-9"></a>})))</span>
+<span id="cb212-10"><a href="sdms-gam.html#cb212-10"></a>df<span class="op">$</span>delAIC &lt;-<span class="st"> </span>df<span class="op">$</span>AIC <span class="op">-</span><span class="st"> </span><span class="kw">min</span>(df<span class="op">$</span>AIC)</span>
+<span id="cb212-11"><a href="sdms-gam.html#cb212-11"></a>df &lt;-<span class="st"> </span>df[<span class="kw">order</span>(df<span class="op">$</span>AIC), ]</span>
+<span id="cb212-12"><a href="sdms-gam.html#cb212-12"></a>knitr<span class="op">::</span><span class="kw">kable</span>(df, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="right">Spearman</th>
+<th align="right">AUC</th>
+<th align="right">AIC</th>
+<th align="right">delAIC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">gamVIF4</td>
+<td align="right">0.898</td>
+<td align="right">0.7903223</td>
+<td align="right">2544.444</td>
+<td align="right">0.00000</td>
+</tr>
+<tr class="even">
+<td align="left">gamVIF2</td>
+<td align="right">0.912</td>
+<td align="right">0.7703471</td>
+<td align="right">2580.769</td>
+<td align="right">36.32482</td>
+</tr>
+<tr class="odd">
+<td align="left">gamEnv4</td>
+<td align="right">0.923</td>
+<td align="right">0.7780496</td>
+<td align="right">2585.135</td>
+<td align="right">40.69091</td>
+</tr>
+<tr class="even">
+<td align="left">gamEnv2</td>
+<td align="right">0.952</td>
+<td align="right">0.7580661</td>
+<td align="right">2643.915</td>
+<td align="right">99.47074</td>
+</tr>
+<tr class="odd">
+<td align="left">gamLC4</td>
+<td align="right">0.739</td>
+<td align="right">0.7366860</td>
+<td align="right">2648.078</td>
+<td align="right">103.63397</td>
+</tr>
+<tr class="even">
+<td align="left">glmStep</td>
+<td align="right">0.956</td>
+<td align="right">0.7396198</td>
+<td align="right">2668.134</td>
+<td align="right">123.69003</td>
+</tr>
+<tr class="odd">
+<td align="left">glmVIF</td>
+<td align="right">0.957</td>
+<td align="right">0.7400992</td>
+<td align="right">2677.802</td>
+<td align="right">133.35830</td>
+</tr>
+<tr class="even">
+<td align="left">gamLC2</td>
+<td align="right">0.915</td>
+<td align="right">0.7262231</td>
+<td align="right">2690.923</td>
+<td align="right">146.47915</td>
+</tr>
+<tr class="odd">
+<td align="left">gamEnvMin</td>
+<td align="right">0.876</td>
+<td align="right">0.7242727</td>
+<td align="right">2705.002</td>
+<td align="right">160.55791</td>
+</tr>
+<tr class="even">
+<td align="left">glmLC</td>
+<td align="right">0.901</td>
+<td align="right">0.7164793</td>
+<td align="right">2729.548</td>
+<td align="right">185.10447</td>
+</tr>
+<tr class="odd">
+<td align="left">gamTopo4</td>
+<td align="right">0.855</td>
+<td align="right">0.7377025</td>
+<td align="right">2755.702</td>
+<td align="right">211.25764</td>
+</tr>
+<tr class="even">
+<td align="left">glmEnv</td>
+<td align="right">0.823</td>
+<td align="right">0.7246033</td>
+<td align="right">2763.459</td>
+<td align="right">219.01545</td>
+</tr>
+<tr class="odd">
+<td align="left">gamTopo2</td>
+<td align="right">0.871</td>
+<td align="right">0.7300413</td>
+<td align="right">2777.790</td>
+<td align="right">233.34575</td>
+</tr>
+<tr class="even">
+<td align="left">glmMinEnv</td>
+<td align="right">0.881</td>
+<td align="right">0.6973802</td>
+<td align="right">2791.425</td>
+<td align="right">246.98085</td>
+</tr>
+<tr class="odd">
+<td align="left">glmTopo</td>
+<td align="right">0.863</td>
+<td align="right">0.7244628</td>
+<td align="right">2798.976</td>
+<td align="right">254.53206</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="save" class="section level2">
+<h2><span class="header-section-number">9.10</span> Save</h2>
+<p>Save.</p>
+<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="sdms-gam.html#cb213-1"></a><span class="kw">save</span>(gamfm, pm.plot, modellist, <span class="dt">file =</span> <span class="st">&quot;modellist.RData&quot;</span>)</span></code></pre></div>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="sdms-glm.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/eeholmes/Species-Dist-Modeling---Trillium/edit/master/09_GAM.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["sdm-demo.pdf"],
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

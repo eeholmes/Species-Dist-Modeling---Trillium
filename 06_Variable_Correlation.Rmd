@@ -12,16 +12,16 @@ library(raster)
 
 ## Set-up
 
-Load the data prepared in earlier chapters. This loads `dat.und` with the climate data for each cell with presences of *Trillium undulatum* plus the background cells.
+Load the data for the SDMs prepared in earlier chapters. This loads `dat.und` with the climate data for each cell with presences of *Trillium undulatum* plus the background cells.
 ```{r}
-load("data/trillium_with_predictors.RData")
+load("data/sdm_data.RData")
 ```
 
-There are a few covariates that I know I don't want. Specifically, the wet and dry qtr variables because that is summer in some cells and winter in others. Also I'll exclude Snow, since that is all 0. And I'll exclude `cells` and `species` since I don't use those ever. Finally, dominant land cover is a categorical variable so I will exclude that (to make my life easier).
+There are a few covariates that I know I don't want. Specifically, the wet and dry qtr variables because that is summer in some cells and winter in others. Also I'll exclude Snow since that is all 0 and Barren since that is almost all 0. And I'll exclude `cells` and `species` since I don't use those ever. Finally, dominant land cover is a categorical variable so I will exclude that (to make my life easier).
 ```{r}
 dat.und <- dat.und[, !stringr::str_detect(colnames(dat.und),"[.]wet[.]")]
 dat.und <- dat.und[, !stringr::str_detect(colnames(dat.und),"[.]dry[.]")]
-dat.und <- subset(dat.und, select=c(-cells, -species, -Dominant.Land.Cover, -Snow))
+dat.und <- subset(dat.und, select=c(-cells, -species, -Dominant.Land.Cover, -Snow, -Barren))
 ```
 
 ## Variable correlation
@@ -40,10 +40,10 @@ varCor <- cor(tmpdat, use = "na.or.complete")
 corrplot::corrplot(varCor)
 ```
 
-After exploring the models, I came up with the following set of not too correlated variables that still explain much of the variability in presence/absence. But below I will also try variance inflation to select a set of non-collinear variables.
+After exploring the models, I came up with the following set of not too correlated variables that still explain much of the variability in presence/absence. This set was selected by 1) considering what factors might influence a long-lived wildflower, 2) looking at the correlation plots, and 3) fitting different GAM models and looking at the effects curves for evidence of collinearity problems. The latter can be seen with curves that are mirrors of each other with high uncertainty (a hallmark of collinearity problems). But below I will also try variance inflation to select a set of non-collinear variables.
 
 ```{r}
-envvars <- c("mean.temp", "temp.diurnal.range", "temp.seasonality", "precip.warm.qtr", "precip.seasonality", "precip.cold.qtr")
+envvars <- c("mean.temp", "temp.diurnal.range", "temp.seasonality", "precip.warm.qtr",  "precip.cold.qtr")
 ```
 
 That gets me a set of variables that are not so horribly correlated.
@@ -78,11 +78,12 @@ I'll test models with all variables and these subsets.
 ```{r}
 topovars <- c("elevation", "slope", "aspect")
 lcvars <- c("Tree.Cover", "mean.temp", "precip.warm.qtr" )
-envvars <- c("mean.temp", "temp.diurnal.range", "temp.seasonality", "precip.warm.qtr", "precip.seasonality", "precip.cold.qtr")
+envvars <- c("mean.temp", "temp.diurnal.range", "temp.seasonality", "precip.warm.qtr", "precip.cold.qtr")
 minEnvVars <- c("precip.warm.qtr", "mean.temp", "temp.diurnal.range")
 ```
 
-I'll save because I'll be using these variables across different SDM chapters.
+I'll save because I'll be using these variables across different SDM chapters. This code loads in my existing `sdm_data` file, records what objects are there (`tmp` is a character vector of objects in `sdm_data`), and then resaves with the original objects plus the ones I want to add.
 ```{r}
-save(topovars, lcvars, envvars, minEnvVars, vifvars, file="data/varlists.RData")
+tmp <- load("data/sdm_data.RData")
+save(topovars, lcvars, envvars, minEnvVars, vifvars, list=tmp, file="data/sdm_data.RData")
 ```

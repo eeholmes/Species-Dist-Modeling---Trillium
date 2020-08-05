@@ -1,0 +1,212 @@
+# Comparison across other training data
+
+I want to make sure that the selected variables are not changing a lot with different random test splits.  I'll make 20 random splits and look for variables that seem problematic (effect changes depending on the random data). I am going to select 50% of my data for training instead of 80%. I want to see how the variable selection and importance changes with different training data.
+
+## Set-up
+
+This chapter will use the following libraries.
+```{r}
+library(biomod2)
+library(MASS)
+library(ggplot2)
+library(ecospat)
+library(sp)
+library(raster)
+```
+
+### Load the data
+
+Load the shapefiles, Trillium data and variables raster stack created earlier.
+```{r}
+# The VT, NH and HB outlines
+load("data/shapefiles.RData")
+
+# The original observation data lat/lon
+load("data/trillium_presences.RData")
+
+# All the data needed to fit the SDM
+# The grid cells with presences and background grid cells w predictors
+# The variables that I'll use for various models
+load("data/sdm_data.RData")
+# Raster of all predictors
+allVars <- raster::brick("data/allVars.grd")
+```
+
+## Run fits
+
+
+```{r}
+modlist <- list()
+n <- length(traindatlist)
+for(i in 1:n){
+gamEnv <- gam::gam(formula = gamfm(envvars, 4),
+            data=traindatlist[[i]]$traindat, 
+            family="binomial")
+modlist[[paste("split",i)]] <- gamEnv
+}
+```
+
+```{r}
+df <- data.frame()
+for(i in 1:n){
+  mod1 <- modlist[[i]]
+rp <- biomod2::response.plot2(models = "mod1",
+                     Data = datlist[[i]]$traindat,
+                     show.variables = envvars,
+                     fixed.var.metric = 'mean', plot = FALSE, use.formal.names = TRUE)
+df <- rbind(df, cbind(rp, i=paste("samp", i)))
+}
+```
+
+```{r}
+gg.rp <- ggplot(df, aes(x = expl.val, y = pred.val)) +
+  geom_line(aes(col=i)) + ylab("prob of occ") + xlab("") + 
+  rp.gg.theme + 
+  facet_wrap(~ expl.name, scales = 'free_x') +
+  ggtitle("Response curves across random samples") +
+  theme(legend.position = "none")
+print(gg.rp)
+```
+
+```{r}
+df2 <- data.frame()
+for(i in 1:n){
+  gamStart <- gam::gam(formula = gamfm(envvars, 4),
+            data=datlist[[i]]$traindat, 
+            family="binomial")
+  varimp <- biomod2::variables_importance(
+    gamStart, 
+    data=traindatlist[[i]]$traindat)$mat
+  varimp <- varimp[varimp[,1]!=0,]
+  df2 <- rbind(df2, data.frame(varimp=varimp, term=names(varimp), i=paste("samp", i)))
+}
+```
+
+```{r}
+p <- ggplot(df2, aes(term, varimp)) +
+  geom_boxplot() + coord_flip() +
+  ggtitle("Variable importance across data sets")
+p
+```
+
+
+# Models across many seeds
+
+Now rerun the analysis with many different random splits of the data and see how variable the results are.
+
+```{r eval=FALSE}
+n <- length(traindatlist)
+allmodels <- list()
+for(mn in 1:n){
+  cat(mn," ") #progress
+
+  traindat <- traindatlist[[i]]$traindat
+
+modellist <- list()
+
+glmVIF <- stats::glm(formula =pa ~ ., 
+                family = binomial(link = "logit"),
+                data=traindat[,c("pa", vifvars)])
+modellist[["glmVIF"]] <- list(model=glmVIF, name="glmVIF", desc="GLM - all VIF variables", terms=vifvars)
+
+glmStep <- MASS::stepAIC(object=glmVIF, 
+                     scope=pa ~ .,
+                     data = traindat.sub,
+                     direction = "both", 
+                     trace = -1, #quiet
+                     k = 2, 
+                     control=glm.control(maxit=500))
+modellist[["glmStep"]] <- list(model=glmStep, name="glmStep", desc="GLM - variables selected w step AIC", terms=attr(glmStep$terms, "term.labels"))
+
+glmLC <- stats::glm(formula =pa ~ ., 
+                family = binomial(link = "logit"),
+                data=traindat[,c("pa",lcvars)])
+modellist[["glmLC"]] <- list(model=glmLC, name="glmLC", desc="GLM - LC variables", terms=lcvars)
+
+glmTopo <- stats::glm(formula =pa ~ ., 
+                family = binomial(link = "logit"),
+                data=traindat[,c("pa",topovars)])
+modellist[["glmTopo"]] <- list(model=glmTopo, name="glmTopo", desc="GLM - topo variables", terms=topovars)
+
+glmEnv <- stats::glm(formula =pa ~ ., 
+                family = binomial(link = "logit"),
+                data=traindat[,c("pa",envvars)])
+modellist[["glmEnv"]] <- list(model=glmEnv, name="glmEnv", desc="GLM - environmental variables", terms=envvars)
+
+gamEnvMin <- gam::gam(formula = gamfm(minEnvVars, 4),
+            data=traindat, 
+            family="binomial")
+modellist[["gamEnvMin"]] <- list(model=gamEnvMin, name="gamEnvMin", desc="GAM - Minimal", terms=minEnvVars)
+
+gamTopo2 <- gam::gam(formula = gamfm(topovars, 2),
+            data=traindat, 
+            family="binomial")
+gamTopo4 <- gam::gam(formula = gamfm(topovars, 4),
+            data=traindat, 
+            family="binomial")
+mod <- paste0("gamTopo", c(2,4))
+desc <- paste0("GAM - Topo variables df=", c(2,4))
+for(i in 1:2){
+modellist[[mod[i]]] <- list(model=get(mod[i]), name=mod[i], desc=desc[i], terms=topovars)
+}
+
+gamLC2 <- gam::gam(formula = gamfm(lcvars,2),
+            data=traindat, 
+            family="binomial")
+gamLC4 <- gam::gam(formula = gamfm(lcvars,4),
+            data=traindat, 
+            family="binomial")
+
+mod <- paste0("gamLC", c(2,4))
+desc <- paste0("GAM - Tree Cover variables df=", c(2,4))
+for(i in 1:2){
+modellist[[mod[i]]] <- list(model=get(mod[i]), name=mod[i], desc=desc[i], terms=topovars)
+}
+
+gamEnv2 <- gam::gam(formula = gamfm(envvars, 2),
+            data=traindat, 
+            family="binomial")
+gamEnv4 <- gam::gam(formula = gamfm(envvars, 4),
+            data=traindat, 
+            family="binomial")
+mod <- paste0("gamEnv", c(2,4))
+desc <- paste0("GAM - Environmental variables df=", c(2,4))
+for(i in 1:2){
+modellist[[mod[i]]] <- list(model=get(mod[i]), name=mod[i], desc=desc[i], terms=topovars)
+}
+for(i in names(modellist)){
+  pm <- predict(allVars,
+              modellist[[i]]$model,
+              type="response")
+bindex <- ecospat::ecospat.boyce(pm, cbind(pres_test$lon, pres_test$lat), PEplot=FALSE)
+modellist[[i]]$bindex <- bindex
+modellist[[i]]$AIC <- AIC(modellist[[i]]$model)
+modellist[[i]]$AUC <- dismo::evaluate(pres_test, backg_test, model=modellist[[i]]$model)@auc
+modellist[[i]]$Spearman.cor <- modellist[[i]]$bindex$Spearman.cor
+}
+allmodels[[mn]] <- modellist
+}
+save(allmodels, file="allmodels.RData")
+df2 <- data.frame()
+for(i in 1:length(allmodels)){
+  minAIC <- min(unlist(lapply(allmodels[[i]], function(x){x$AIC})))
+  for(j in names(allmodels[[i]])){
+    mod <- allmodels[[i]][[j]]
+  df2 <- rbind(df2, data.frame(n=i,model=j,delAIC=mod$AIC-minAIC, Spearman.cor=mod$Spearman.cor, AUC=mod$AUC, AIC=mod$AIC))
+  }
+}
+df2$n <- as.factor(df$n)
+df.allmodels <- df2
+save(df.allmodels, allmodels, file="allmodels.RData")
+save(df.allmodels, file="dfallmodels.RData")
+```
+
+```{r}
+library(tidyr)
+load("dfallmodels.RData")
+df.long <- pivot_longer(df.allmodels, c(-n, -model), names_to = "term", values_to = "value")
+p <- ggplot(df.long, aes(model, value))
+p + geom_boxplot() + coord_flip() + facet_wrap(~term, scale="free_x")
+```
+
+

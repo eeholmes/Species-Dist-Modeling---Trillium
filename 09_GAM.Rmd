@@ -1,0 +1,383 @@
+# SDMs -- GAM
+
+A generalized additive model (GAM) is similar to a linear regression model except that the relationship between the response variable and explanatory variables is flexible. For example,
+
+$$y = \alpha + s_1(x_1) + s_2(x_2) + \epsilon$$
+where $s()$ is a function.  The code for fitting the GAMs will be similar in structure to the code for fitting the GLMs and the same evaluation metrics can be calculated.
+
+## Set-up
+
+This chapter will use the following libraries.
+```{r}
+library(biomod2)
+library(gam)
+library(ggplot2)
+library(ecospat)
+library(sp)
+library(raster)
+```
+
+### Load the data and GLM models
+
+Load the shapefiles, Trillium data and variables raster stack created earlier.
+```{r}
+# The VT, NH and HB outlines
+load("data/shapefiles.RData")
+
+# The original observation data lat/lon
+load("data/trillium_presences.RData")
+
+# All the data needed to fit the SDM
+# The grid cells with presences and background grid cells w predictors
+# The variables that I'll use for various models
+load("data/sdm_data.RData")
+
+# Raster of all predictors
+allVars <- raster::brick("data/allVars.grd")
+```
+
+Load the model list from the GLM chapter plus the `pm.plot` function.
+```{r}
+load("modellist.RData")
+```
+
+### First data set
+
+For the first fit, I use the first data set in my training/test list.
+
+```{r}
+traindat <- traindatlist[[1]]$traindat
+pres_test <- traindatlist[[1]]$pres_test
+backg_test <- traindatlist[[1]]$backg_test
+```
+
+## Fit GAM
+
+The GAM formula in R looks like `response ~ s(var1, sm) + s(var2, sm)`. The `s()` is the spline function and allows the response to be non-linear. The second number, `sm` is the amount of smoothing and the default way you specify this is different for the `gam::gam()` function versus the `mcgv::gam()` function. Here I use `gam::gam()` and use the `df` argument (default). `df=1` would be linear.
+
+I will write a function to make my formula for the `gam()` call. That way I don't have to make it manually.
+```{r}
+gamfm <- function(x, df, f=NULL){
+  if(length(f)!=0) x<-x[x!=f]
+fm <- paste0('s(', x, ', ', df, ')', collapse = ' + ')
+if(length(f)!=0){
+  ff <- paste0(f, collapse = ' + ')
+  fm <- paste(fm,ff, sep="+")
+}
+fm <- as.formula(paste('pa ~', fm))
+return(fm)
+}
+```
+
+
+For the GAM model with less smoothing (`df=2`), the formula is
+```{r}
+gamfm(envvars, 2)
+```
+Notice how the variables are in a `s()` function. That is the spline function.
+
+Because I am specifying what variables to use in the model formula, I don't need to subset the training data. I can just pass the whole data frame in.
+```{r warning=FALSE, message=FALSE}
+gamEnv2 <- gam::gam(formula = gamfm(envvars, 2),
+            data=traindat, 
+            family="binomial")
+```
+
+For the more flexible model, I use
+```{r warning=FALSE, message=FALSE}
+gamEnv4 <- gam::gam(formula = gamfm(envvars, 4),
+            data=traindat, 
+            family="binomial")
+```
+
+Save models.
+```{r}
+mod <- paste0("gamEnv", c(2,4))
+desc <- paste0("GAM - Environmental variables df=", c(2,4))
+for(i in 1:2){
+  pm <- predict(allVars, get(mod[i]), type="response")
+bindex <- ecospat::ecospat.boyce(pm, cbind(pres_test$lon, pres_test$lat), PEplot=FALSE)
+modellist[[mod[i]]] <- list(model=get(mod[i]), name=mod[i], desc=desc[i], terms=envvars, bindex = bindex)
+}
+```
+
+We can compute the same output and diagnostics as we did for GLMs.
+
+### Predictions
+
+```{r}
+pm <- predict(allVars, gamEnv4, type="response")
+pm.plot(pm)
+```
+
+Let's zoom in on Hubbard Brook.
+```{r}
+xlims <- c(-71.9,-71.6)
+ylims <- c(43.875,44)
+pm.plot(pm, main='Environmental Variables', xlim=xlims, ylim=ylims, scale.max=0.5)
+```
+
+### Response curves
+
+This shows the relationship between the predictor variable and the probability of presence.
+
+```{r}
+rp <- biomod2::response.plot2(models = c('gamEnv4', 'gamEnv2'),
+                     Data = traindat,
+                     show.variables = envvars,
+                     fixed.var.metric = 'mean', 
+                     use.formal.names = TRUE)
+```
+
+Since `rp` is a data frame in long form, we can also use ggplot to plot.
+```{r}
+p <- ggplot(rp, aes(x = expl.val, y = pred.val, lty = pred.name)) +
+  geom_line() + ylab("prob of occ") + xlab("") + 
+  facet_wrap(~ expl.name, scales = 'free_x') + 
+  ggtitle("Environmental variables")
+p
+```
+
+### AUC Curves
+
+```{r}
+erf <- dismo::evaluate(pres_test, backg_test, model=gamEnv4)
+plot(erf, 'ROC')
+```
+
+### Boyce Index
+
+```{r results="hide"}
+predict(allVars, gamEnv4, type="response")
+ecospat::ecospat.boyce(pm, cbind(pres_test$lon, pres_test$lat))
+```
+
+### Variable importance
+
+This is a measure of how much each variable singly impacts the fit.
+```{r}
+varimp <- biomod2::variables_importance(gamEnv4, data=traindat)$mat
+varimp[varimp>0.01,]
+```
+
+
+## Effect size curves
+
+Let's look at the GAM effect size curves for the model with 5 environmental variables. The effect curves are non-linear.
+```{r}
+po <- gam:::preplot.Gam(gamEnv4, terms = attr(terms(gamEnv4), "term.labels"))
+dfenv <- data.frame(x=NULL, y=NULL, se=NULL, variable=NULL)
+for(i in names(po)){
+  vname <- stringr::str_replace(i, "s[(]", "")
+  vname <- stringr::str_replace(vname, ", 4[)]", "")
+  a <- data.frame(x=po[[i]]$x, y=po[[i]]$y, se=po[[i]]$se.y, variable=vname)
+  dfenv <- rbind(dfenv, a)
+}
+p <- ggplot(dfenv, aes(x=x, y=y)) + geom_line() +
+  geom_ribbon(aes(ymin=y+2*se, ymax=y-2*se), col="grey", alpha=0.5) +
+  ylab("effect size")
+p + facet_wrap(~variable, scales="free")
+```
+
+
+## More GAM fits
+
+Now I repeat the model fitting code for the other sets of variables and store to my model list.
+
+### Topographical only model
+
+```{r}
+gamTopo2 <- gam::gam(formula = gamfm(topovars, 2),
+            data=traindat, 
+            family="binomial")
+gamTopo4 <- gam::gam(formula = gamfm(topovars, 4),
+            data=traindat, 
+            family="binomial")
+```
+Save models.
+```{r}
+mod <- paste0("gamTopo", c(2,4))
+desc <- paste0("GAM - Topo variables df=", c(2,4))
+for(i in 1:2){
+  pm <- predict(allVars, get(mod[i]), type="response")
+bindex <- ecospat::ecospat.boyce(pm, cbind(pres_test$lon, pres_test$lat), PEplot=FALSE)
+modellist[[mod[i]]] <- list(model=get(mod[i]), name=mod[i], desc=desc[i], terms=topovars, bindex = bindex)
+}
+```
+
+### Land cover model
+
+```{r}
+gamLC2 <- gam::gam(formula = gamfm(lcvars,2),
+            data=traindat, 
+            family="binomial")
+gamLC4 <- gam::gam(formula = gamfm(lcvars,4),
+            data=traindat, 
+            family="binomial")
+```
+
+Save models.
+```{r}
+mod <- paste0("gamLC", c(2,4))
+desc <- paste0("GAM - Tree Cover variables df=", c(2,4))
+for(i in 1:2){
+  pm <- predict(allVars, get(mod[i]), type="response")
+bindex <- ecospat::ecospat.boyce(pm, cbind(pres_test$lon, pres_test$lat), PEplot=FALSE)
+modellist[[mod[i]]] <- list(model=get(mod[i]), name=mod[i], desc=desc[i], terms=lcvars, bindex = bindex)
+}
+```
+
+### Minimal GAM Model
+
+```{r}
+gamEnvMin <- gam::gam(formula = gamfm(minEnvVars, 4),
+            data=traindat, 
+            family="binomial")
+pm <- predict(allVars, gamEnvMin, type="response")
+bindex <- ecospat::ecospat.boyce(pm, cbind(pres_test$lon, pres_test$lat), PEplot=FALSE)
+modellist[["gamEnvMin"]] <- list(model=gamEnvMin, name="gamEnvMin", desc="GAM - Minimal", terms=minEnvVars, bindex = bindex)
+```
+
+### VIF Vars
+
+```{r}
+gamVIF2 <- gam::gam(formula = gamfm(vifvars,2),
+            data=traindat, 
+            family="binomial")
+gamVIF4 <- gam::gam(formula = gamfm(vifvars,4),
+            data=traindat, 
+            family="binomial")
+```
+
+Save models.
+```{r}
+mod <- paste0("gamVIF", c(2,4))
+desc <- paste0("GAM - VIF variables df=", c(2,4))
+for(i in 1:2){
+  pm <- predict(allVars, get(mod[i]), type="response")
+bindex <- ecospat::ecospat.boyce(pm, cbind(pres_test$lon, pres_test$lat), PEplot=FALSE)
+modellist[[mod[i]]] <- list(model=get(mod[i]), name=mod[i], desc=desc[i], terms=vifvars, bindex = bindex)
+}
+```
+
+## Model Comparison
+
+### Predictions
+
+Compare the topo, LC and environmenal predictions.
+
+```{r}
+pg.topo <- predict(allVars, gamTopo4, type="response")
+pg.env <- predict(allVars, gamEnv4, type="response")
+pg.lc <- predict(allVars, gamLC4, type="response")
+pg.min <- predict(allVars, gamEnvMin, type="response")
+```
+
+Now make the prediction plots.
+```{r}
+par(mfrow=c(2,2))
+mar <- c(0,0,2,0)
+pm.plot(pg.topo, main='Topographical Variables', legend=FALSE, axes=FALSE, box=FALSE, mar=mar)
+pm.plot(pg.env, main='Environmental Variables', legend=FALSE, axes=FALSE, box=FALSE, mar=mar)
+pm.plot(pg.lc, main='Tree Cover Variables', legend=FALSE, axes=FALSE, box=FALSE, mar=mar)
+pm.plot(pg.min, main='Three Env Variables', legend=FALSE, axes=FALSE, box=FALSE, mar=mar)
+```
+
+## AUCs
+
+```{r}
+aucs <- unlist(lapply(modellist,function(x){
+  dismo::evaluate(pres_test, backg_test, model=x$model)@auc
+}))
+sort(aucs)
+```
+
+## Boyce Index - Spearman
+
+Let's look at the Spearman correlations from the Boyce Index. 
+```{r}
+bis <- unlist(lapply(modellist,function(x){
+  x$bindex$Spearman.cor
+}))
+sort(bis)
+```
+
+Compare some of the Boyce Index plots.
+```{r}
+dfb <- data.frame(x=NULL, y=NULL, model=NULL)
+for(i in c("gamEnv4","gamLC4","gamEnvMin", "gamVIF4")){
+  bi <- modellist[[i]]$bindex
+  a <- data.frame(y=bi$F.ratio, x=bi$HS, model=i)
+  dfb <- rbind(dfb, a)
+}
+dfb$observed <- "yes"
+dfb$observed[dfb$y==0] <- "no"
+p <- ggplot(dfb, aes(x=x, y=y)) + geom_point(aes(col=observed)) +
+  ylab("Boyce Index") + xlab("Suitability")
+p + facet_wrap(~model, scales = "free_y") +
+  ggtitle("Evaluation of the test data performance")
+```
+
+## Hubbard Brook comparisons
+
+Let's zoom in on Hubbard Brook. The observations to the far right are next to the labs. The GLM makes the ridges (boundary) much higher in suitability than the lower elevation brook bottom (center). The model with tree cover also makes the ridge more suitable than the lower elevation.
+```{r}
+par(mfrow=c(2,2))
+xlims <- c(-71.9,-71.6)
+ylims <- c(43.875,44)
+mar <- c(0,0,3,0)
+for(i in c("gamEnvMin", "gamEnv4", "gamLC4", "gamTopo4")){
+pg <- predict(allVars, modellist[[i]]$model, type="response")
+pm.plot(pg, main=i, xlim=xlims, ylim=ylims, scale.max=0.5, box=FALSE, axes=FALSE, legend=FALSE, mar=mar)
+}
+```
+
+Tree composition in Hubbard Brook also tracks these environmental conditions it looks like.
+![Hubbard Brook forest composition](images/hb_forest_composition.png){width="400px"}
+
+### Response curves
+
+We can compare the response curves for models which have the same variables.
+```{r}
+rp <- biomod2::response.plot2(models = c('gamEnv4', 'gamLC4', 'gamVIF4'),
+                     Data = traindat,
+                     show.variables = envvars,
+                     fixed.var.metric = 'mean', plot = FALSE, use.formal.names = TRUE)
+```
+The models don'have all the variables. I will put NAs if the model doesn't have that variable.
+```{r}
+rp$include <- apply(rp, 1, function(x){x[2] %in% modellist[[x[4]]]$terms})
+rp$pred.val[!rp$include] <- NA
+```
+
+```{r}
+gg.rp <- ggplot(rp, aes(x = expl.val, y = pred.val, col = pred.name)) +
+  geom_line(na.rm=TRUE) + ylab("prob of occ") + xlab("") + 
+  facet_wrap(~ expl.name, scales = 'free_x') +
+  ggtitle("Environmental variables")
+print(gg.rp)
+```
+
+
+## Model comparison table (first data set)
+
+Compare AICs, Spearman Correlation for the models with the first data set (in `traindatlist`).
+
+```{r}
+df <- data.frame(
+  name=unlist(lapply(modellist, function(x){x$name})),
+  Spearman=unlist(lapply(modellist, function(x){x$bindex$Spearman.cor})),
+  AUC=unlist(lapply(modellist,function(x){dismo::evaluate(pres_test, backg_test, model=x$model)@auc})),
+  AIC=unlist(lapply(modellist, function(x){AIC(x$model)}))
+)
+df$delAIC <- df$AIC-min(df$AIC)
+df <- df[order(df$AIC),]
+knitr::kable(df, row.names=FALSE)
+```
+
+## Save
+
+Save.
+```{r}
+save(gamfm, pm.plot, modellist, file="modellist.RData")
+```

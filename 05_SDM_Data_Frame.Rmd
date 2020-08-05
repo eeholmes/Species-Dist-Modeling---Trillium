@@ -126,5 +126,5 @@ dat.grand <- na.omit(dat.grand)
 
 Save.
 ```{r}
-save(dat, dat.und, dat.grand, file="data/trillium_with_predictors.RData")
+save(dat, dat.und, dat.grand, file="data/sdm_data.RData")
 ```

@@ -1,0 +1,386 @@
+# SDMs -- GLM
+
+In a linear regression, we look to explain the value of a response variable with a linear combination of our explanatory variables. For example,
+
+$$y = \alpha + \beta_1 x_1 + \beta_2 x_2 + \epsilon$$
+
+In the case of the presence/background SDM, our observations are 0 or 1. We do logistic regression and our $y$ is the probability of an observation (probability of 'success' aka a 1). We are trying to find a set of variables and $\beta$s where cells with 1s are predicted to have high probability of observation and cells with no observations have low probability. Keep in mind that we are using background, not actually absences (0s).
+
+It's important when doing this kind of analysis to not have too much correlation between your explanatory variables. We already dealt with selecting a set of uncorrelated variables in the chapter on variable correlation, but we'll see a couple more approaches in this chapter too. 
+
+## Set-up
+
+This chapter will use the following libraries.
+```{r}
+library(biomod2)
+library(MASS)
+library(ggplot2)
+library(ecospat)
+library(sp)
+library(raster)
+```
+
+### Load the data
+
+Load the shapefiles, Trillium data and variables raster stack created earlier.
+```{r}
+# The VT, NH and HB outlines
+load("data/shapefiles.RData")
+
+# The original observation data lat/lon
+load("data/trillium_presences.RData")
+
+# All the data needed to fit the SDM
+# The grid cells with presences and background grid cells w predictors
+# The variables that I'll use for various models
+load("data/sdm_data.RData")
+# Raster of all predictors
+allVars <- raster::brick("data/allVars.grd")
+```
+
+### First dataset
+
+For this first fit, I will use the first dataset in my training/test list.
+
+```{r}
+traindat <- traindatlist[[1]]$traindat
+pres_test <- traindatlist[[1]]$pres_test
+backg_test <- traindatlist[[1]]$backg_test
+```
+
+### Model list
+
+I will store my fits to a list so that I can easily compare them.
+
+```{r}
+modellist <- list()
+```
+
+## Fit GLM
+
+Fit a generalized linear model with all the environmental variables. 
+
+* ` pa ~ .` is a model formula. To the left of `~` is the response, in this case presence/absence. 
+* To the right of `~` are the predictor variables. `.` is saying use all variables in the data. To use that shortcut, I need to pass in a data frame with only `pa` (my response variable) and the predictor variables that I want to use. Thus for the environmental variables model, I pass in `traindat[,c("pa", envvars)]` which is a data frame with `pa` and `envvars` selected.
+* `binomial(link = "logit")` is what we specify for logistic regression (modeling 0/1 data).
+
+```{r results="hide"}
+fit <- stats::glm(formula = pa ~ ., 
+                family = binomial(link = "logit"),
+                data=traindat[,c("pa",envvars)])
+```
+
+Save to my model list.
+```{r}
+modellist[["glmEnv"]] <- list(model=fit, name="glmEnv", desc="GLM - environmental variables", terms=envvars)
+```
+
+## Predictions
+
+To plot predictions, use the `predict()` function. We need to pass in the raster stack of the predictor variables and the model. I want to use `type=response` in order to get the probabilities (which is what a binomial fit returns).
+```{r}
+pm <- predict(allVars, fit, type="response")
+```
+Now we can plot the prediction. 
+```{r}
+plot(pm)
+plot(nhvtshp, add=TRUE, border="blue")
+```
+Because I will be making similar plots, I will make a function for my plots so they all look the same.
+```{r}
+pm.plot <- function(x, main="", scale.min=0, scale.max=1, ..., mar=c(5,4,4,5)){
+  par(mar=mar)
+  plot(x, main=main, 
+       breaks=seq(scale.min, scale.max, (scale.max-scale.min)/10), 
+       col = rev(terrain.colors(11)),
+       xlab="Longitude", ylab="Latitude", cex=0.75, ...)
+ plot(nhvtshp, add=TRUE, border="blue")
+ plot(hbshp, add=TRUE)
+}
+```
+Now make the prediction plot with this function.
+```{r}
+pm.plot(pm, main='Environmental Variables')
+```
+
+Let's zoom in on Hubbard Brook.
+```{r}
+xlims <- c(-71.9,-71.6)
+ylims <- c(43.875,44)
+pm.plot(pm, main='Environmental Variables', xlim=xlims, ylim=ylims, scale.max=0.5)
+```
+
+## Model Evaluation
+
+### AUC Curves
+
+This is a plot of how well the model predicts presence and background in the test data (so not the data you used to fit the model). A value of 0.5 is random. Values closer to 1 mean the model predicts better than random. 0.7 would be a mediocre model. This metric is sensitive to what you choose as background and how much background points you have. 
+
+The `dismo::evaluate()` function will calculate this metric for us. It needs the presence and background test data and the model fit.
+```{r}
+erf <- dismo::evaluate(pres_test, backg_test, model=fit)
+plot(erf, 'ROC')
+```
+
+### Boyce Index
+
+The Boyce Index looks just at the presence data. We want this curve to go steadily up from left to right. The `ecospat::ecospat.boyce()` computes this metric.
+
+```{r results="hide"}
+predict(allVars, fit, type="response")
+ecospat::ecospat.boyce(pm, cbind(pres_test$lon, pres_test$lat))
+```
+Our model with environmental variables is ok (it goes up as x increases).
+
+### Response curves
+
+This shows the relationship between the preditor variable and the probability of presence.
+
+```{r}
+rp <- biomod2::response.plot2(models = c('fit'),
+                     Data = traindat,
+                     show.variables = envvars,
+                     fixed.var.metric = 'mean', 
+                     use.formal.names = TRUE)
+```
+
+Since `rp` is a data frame in long form, we can also use ggplot to plot.
+```{r}
+p <- ggplot(rp, aes(x = expl.val, y = pred.val, lty = pred.name)) +
+  geom_line() + ylab("prob of occ") + xlab("") + 
+  facet_wrap(~ expl.name, scales = 'free_x') + 
+  ggtitle("Environmental variables")
+p
+```
+
+### Variable importance
+
+Let's look at the variable importance. This is a measure of how much each variable singly impacts the fit.
+```{r}
+varimp <- biomod2::variables_importance(fit, data=traindat)$mat
+varimp[varimp>0.01,]
+```
+
+## More GLM fits
+
+Now I repeat the model fitting code for the other sets of variables and store to my model list. Careful, this is not memory efficient and `modellist` will be large. I am doing this for convenience since my region is not too big. If I had a big region, the model objects would be large and I would need to be careful with memory.
+
+### Topography only
+
+This is the model with just topography.
+```{r}
+vars <- topovars
+vars
+```
+The only change is that the data are now `traindat[,c("pa", vars)]` with `vars=topovars`.
+```{r results="hide"}
+fit <- stats::glm(formula =pa ~ ., 
+                family = binomial(link = "logit"),
+                data=traindat[,c("pa", vars)])
+modellist[["glmTopo"]] <- list(model=fit, name="glmTopo", desc="GLM - topographical variables", terms=vars)
+```
+
+### Tree Cover only
+
+This is the model with tree cover and a few environmental variables.
+```{r}
+vars <- lcvars
+vars
+```
+
+```{r results="hide"}
+fit <- stats::glm(formula =pa ~ ., 
+                family = binomial(link = "logit"),
+                data=traindat[,c("pa", vars)])
+modellist[["glmLC"]] <- list(model=fit, name="glmLC", desc="GLM - LC variables", terms=vars)
+```
+
+### VIF variables
+
+These were variables selected by the Variance Inflation step search function.
+```{r}
+vars <- vifvars
+vars
+```
+
+```{r results="hide"}
+fit <- stats::glm(formula =pa ~ ., 
+                family = binomial(link = "logit"),
+                data=traindat[,c("pa", vars)])
+modellist[["glmVIF"]] <- list(model=fit, name="glmVIF", desc="GLM - all VIF variables", terms=vars)
+```
+
+### Small set of environmental variables
+
+```{r}
+vars <- minEnvVars
+vars
+```
+
+```{r results="hide"}
+fit <- stats::glm(formula =pa ~ ., 
+                family = binomial(link = "logit"),
+                data=traindat[,c("pa", vars)])
+modellist[["glmMinEnv"]] <- list(model=fit, name="glmMinEnv", desc="GLM - minimal environmental variables", terms=vars)
+```
+
+## Variable selection
+
+The model with the VIF variables still has a lot of variables. 
+
+```{r}
+vifvars
+```
+Let's try stepwise variable selection using AIC as criteria. 
+```{r results="hide", warning=FALSE, message=FALSE}
+glmStart <- glm(pa ~ ., 
+                family = binomial(link = "logit"), 
+                data=traindat[,c("pa", vifvars)])
+glmStep <- MASS::stepAIC(object=glmStart, 
+                     scope=pa ~ .,
+                     data = traindat[,c("pa", vifvars)],
+                     direction = "both", 
+                     trace = -1, 
+                     k = 2, 
+                     control=glm.control(maxit=500))
+# Save
+modellist[["glmStep"]] <- list(model=glmStep, name="glmStep", desc="GLM - variables selected w step AIC", terms=attr(glmStep$terms, "term.labels"))
+```
+
+This model has fewer terms:
+```{r}
+attr(glmStep$terms, "term.labels")
+```
+
+## Model Comparison
+
+### AIC
+
+AIC is a measure of model fit penalized by how many parameters are being fit. It is a model fit metric that helps you not overfit a model (use too many parameters). Smaller AIC is better. The actual value is unimportant rather you compare AICs within a set. Things to keep in mind.
+
+* The data must be identical in the models being compared.
+* Best not to compare AICs from different functions unless you are sure they are showing the same values. Some functions drop a constant, since only differences between models matter. But if you are comparing AICs from models fit with different functions, it critical that the constant is not dropped. This is less of a problem now as function writers are more careful, but just be aware.
+
+Here are the AICs so far. `lapply` means apply a function to all objects in a list. `AIC()` is the function that returns the AIC for a model.
+```{r}
+sort(unlist(lapply(modellist, function(x){AIC(x$model)})))
+```
+
+### AUC curves
+
+First I'll make a data frame.
+```{r}
+dfb <- data.frame(x=NULL, y=NULL, model=NULL)
+for(i in names(modellist)){
+  erf <- dismo::evaluate(pres_test, backg_test, model=modellist[[i]]$model)
+  a <- data.frame(x=erf@FPR, y=erf@TPR, model=i, title=paste0(i," AUC=",round(erf@auc, digits=2)))
+  dfb <- rbind(dfb, a)
+}
+```
+Now I can use that data frame with ggplot.
+```{r}
+p <- ggplot(dfb, aes(x=x, y=y)) + geom_point(col="red") +
+  ylab("True positive rate") + xlab("False positive rate")
+p + facet_wrap(~title) +
+  ggtitle("Evaluation of the false/positive performance") +
+  geom_abline(intercept=0)
+```
+
+### Boyce Index
+
+Let's check model quality using the Boyce Index. First I will add the index to all my model lists. Since I am doing model predictions, I'll save that to a raster stack for plotting later. This takes a long time, so I skip if I've already added the index to the list.
+
+```{r results="hide"}
+for(i in names(modellist)){
+  pm <- predict(allVars, modellist[[i]]$model, type="response")
+if(i == names(modellist)[1]) pm.stack <- pm else pm.stack <- raster::stack(pm.stack, pm)
+if("bindex" %in% names(modellist[[i]])) next
+bindex <- ecospat::ecospat.boyce(pm, cbind(pres_test$lon, pres_test$lat), PEplot=FALSE)
+modellist[[i]]$bindex <- bindex
+}
+names(pm.stack) <- names(modellist)
+```
+Then I'll make a data frame.
+```{r}
+dfb <- data.frame(x=NULL, y=NULL, model=NULL)
+for(i in names(modellist)){
+  bi <- modellist[[i]]$bindex
+  a <- data.frame(y=bi$F.ratio, x=bi$HS, model=i)
+  dfb <- rbind(dfb, a)
+}
+dfb$observed <- "yes"
+dfb$observed[dfb$y==0] <- "no"
+```
+
+Now I can use that data frame with ggplot.
+```{r}
+p <- ggplot(dfb, aes(x=x, y=y)) + geom_point(aes(col=observed)) +
+  ylab("Boyce Index") + xlab("Suitability")
+p + facet_wrap(~model) +
+  ggtitle("Evaluation of the test data performance")
+```
+
+### Response curves
+
+We can compare the response curves for models which have the same variables.
+```{r}
+glmEnv <- modellist[["glmEnv"]]$model
+glmLC <- modellist[["glmLC"]]$model
+rp <- biomod2::response.plot2(models = c('glmEnv', 'glmLC'),
+                     Data = traindat,
+                     show.variables = envvars,
+                     fixed.var.metric = 'mean', plot = FALSE, use.formal.names = TRUE)
+```
+The models don'have all the variables. I will put NAs if the model doesn't have that variable.
+```{r}
+rp$include <- apply(rp, 1, function(x){x[2] %in% modellist[[x[4]]]$terms})
+rp$pred.val[!rp$include] <- NA
+```
+
+```{r}
+gg.rp <- ggplot(rp, aes(x = expl.val, y = pred.val, col = pred.name)) +
+  geom_line(na.rm=TRUE) + ylab("prob of occ") + xlab("") + 
+  facet_wrap(~ expl.name, scales = 'free_x') +
+  ggtitle("Environmental variables")
+print(gg.rp)
+```
+
+
+### Predictions
+
+Unfortunately when it plots a stack, the border shapes don't show up.
+```{r}
+pm.plot(pm.stack, main=names(pm.stack))
+```
+
+Let's zoom in on Hubbard Brook.
+```{r}
+xlims <- c(-71.9,-71.6)
+ylims <- c(43.875,44)
+pm.plot(pm.stack, main=names(pm.stack), xlim=xlims, ylim=ylims, scale.max=0.5)
+```
+
+
+
+## Model comparison table (first data set)
+
+Compare AICs, Spearman Correlation for the models with the first data set (in `traindatlist`).
+
+```{r}
+df <- data.frame(
+  name=unlist(lapply(modellist, function(x){x$name})),
+  Spearman=unlist(lapply(modellist, function(x){x$bindex$Spearman.cor})),
+  AUC=unlist(lapply(modellist,function(x){dismo::evaluate(pres_test, backg_test, model=x$model)@auc})),
+  AIC=unlist(lapply(modellist, function(x){AIC(x$model)}))
+)
+df$delAIC <- df$AIC-min(df$AIC)
+df <- df[order(df$AIC),]
+knitr::kable(df, row.names=FALSE)
+```
+
+## Save
+
+Save so I can use for the next chapter on GAMs. I will also save the function I made for plotting.
+```{r}
+save(pm.plot, modellist, file="modellist.RData")
+```

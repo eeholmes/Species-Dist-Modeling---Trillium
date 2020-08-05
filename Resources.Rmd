@@ -4,4 +4,8 @@
 * [biomod2](http://www.will.chez-alice.fr/Software.html)
 * [maskRangeR](https://cmerow.github.io/maskRangeR/) temporally-spatially matches location to environment data.
 * [Training course from Wallace developers](http://biodiversity-informatics-training.org/)
+* [Paper on Flickr](https://esajournals.onlinelibrary.wiley.com/doi/abs/10.1002/fee.2142)
+* [MeadoWatch](http://www.meadowatch.org/) [article](https://www.hcn.org/issues/50.18/climate-change-volunteer-scientists-study-wildflowers-to-battle-climate-dread-mount-rainier-national-park) Rainer wildflower surveys.
+* [Climate change North Cascades](https://www.fs.fed.us/pnw/pubs/pnw_gtr892.pdf)
+* [Soil moisture maps](https://link.springer.com/article/10.1007/s10584-010-9855-0#:~:text=Pacific%20Northwest%20(PNW)%20hydrology%20is,impact%20the%20rain%2Fsnow%20balance.&text=By%20the%202080s%2C%20seasonal%20streamflow,and%20rain%E2%80%93snow%20mixed%20watersheds.)
 

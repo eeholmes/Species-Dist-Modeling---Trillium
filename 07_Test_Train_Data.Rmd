@@ -13,7 +13,7 @@ library(dismo)
 
 Load the data. This will output the names that are loaded.
 ```{r}
-datnames <- load("data/trillium_with_predictors.RData")
+datnames <- load("data/sdm_data.RData")
 ```
 
 ## Presence train/test
@@ -54,7 +54,7 @@ traindat <- rbind(pres_train, backg_train)
 
 The above code would create just one dataset, but we want to create many since we want to see how/if the model changes with a different training set.
 
-I'll create a list and save the data there. I will run through the code above and assign my train/test datasets to a list. I need to save `traindat` used in the model fitting and `pres_test` and `backg_test` used in the evaluation functions.
+I'll create a list and save the data there. I will run through the code above and assign my train/test datasets to a list. I need to save `traindat` used in the model fitting and `pres_test` and `backg_test` used in the evaluation functions. Note, this is incredibly memory inefficient. I really just need to store `dat.und` and `group`, but for convenience sake, I am pre-making whole datasets and storing those. If the dataset were larger, I could not do this.
 
 ```{r}
 traindatlist <- list()
@@ -78,9 +78,9 @@ for (i in 1:n) {
 
 ## Save
 
-I'll add this to the `trillium_with_predictors` data file.
+I'll add this to the `sdm_data` data file.
 ```{r}
-save(datnames, traindatlist, file="data/trillium_with_predictors.RData")
+save(traindatlist, list=datnames, file="data/sdm_data.RData")
 ```
 
 

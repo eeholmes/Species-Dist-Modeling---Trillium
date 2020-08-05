@@ -99,8 +99,6 @@ plot(hbshp, add = TRUE, border = "blue")
 
 ## Save
 
-I will save to the trillium file also. Later I will be subsetting and using a grid with `pa=1` if trillium was observed in that grid cell so I want to name it to be clear that this is the original observance data.
 ```{r}
-trillium_observed <- trillium
 save(trillium, trillium.raw, file = "data/trillium_presences.RData")
 ```

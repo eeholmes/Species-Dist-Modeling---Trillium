@@ -1,4 +1,5 @@
 book_filename: "sdm-demo"
+repo: https://github.com/eeholmes/Species-Dist-Modeling---Trillium
 language:
   ui:
     chapter_name: "Chapter "
@@ -13,3 +14,5 @@ rmd_files:
   - "05_SDM_Data_Frame.Rmd"
   - "06_Variable_Correlation.Rmd"
   - "07_Test_Train_Data.Rmd"
+  - "08_GLM.Rmd"
+  - "09_GAM.Rmd"
