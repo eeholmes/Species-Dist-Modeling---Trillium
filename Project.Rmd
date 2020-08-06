@@ -52,3 +52,10 @@ Spatial data in R
 Hubbard Brook
 
 * https://www.caryinstitute.org/science/research-projects/hubbard-brook-ecosystem-study
+
+
+North Cascades
+
+* https://www.inaturalist.org/taxa/60482-Pulsatilla-occidentalis
+* https://www.inaturalist.org/taxa/48583-Sorbus-sitchensis
+* Super common paintbrushes https://www.inaturalist.org/taxa/49340-Castilleja
