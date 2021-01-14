@@ -24,7 +24,7 @@
 <meta name="author" content="E. E. Holmes" />
 
 
-<meta name="date" content="2020-08-05" />
+<meta name="date" content="2020-10-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -237,55 +237,55 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>This is also called cross-validation. The jargon used is <code>folds</code> where each fold is the random sample of data that you will test against. So if we do <code>k-fold</code> cross-validation where <code>k=5</code>. That means we randomly assign our data to 5 groups (1 to 5). We do 5 fits. The first one will use group 1 as the testing data, and fit the model to the other data. The second one will use group 2 as the testing data and fit to the rest. Etc. That ensure that you test against different data each time.</p>
 <p>Another way to do this test is to randomly select 1/k proportion of your data to use for testing and repeat that many times to create many test/train data sets. I am going to use this approach.</p>
 <p>This chapter will use the following libraries.</p>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="training-and-testing-data.html#cb102-1"></a><span class="kw">library</span>(dismo)</span></code></pre></div>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="training-and-testing-data.html#cb103-1"></a><span class="kw">library</span>(dismo)</span></code></pre></div>
 <p>Load the data. This will output the names that are loaded.</p>
-<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="training-and-testing-data.html#cb103-1"></a>datnames &lt;-<span class="st"> </span><span class="kw">load</span>(<span class="st">&quot;data/sdm_data.RData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="training-and-testing-data.html#cb104-1"></a>datnames &lt;-<span class="st"> </span><span class="kw">load</span>(<span class="st">&quot;data/sdm_data.RData&quot;</span>)</span></code></pre></div>
 <div id="presence-traintest" class="section level2">
 <h2><span class="header-section-number">7.1</span> Presence train/test</h2>
 <p>We set up a training set of presence data and a test set. <code>kfold</code> is just a function to randomly assign the data to <code>k</code> groups. I want just the presence data so will subset to <code>pa</code> column equal 1. I will call the presence only data <code>presdat</code>.</p>
-<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="training-and-testing-data.html#cb104-1"></a><span class="kw">set.seed</span>(<span class="dv">10</span>)</span>
-<span id="cb104-2"><a href="training-and-testing-data.html#cb104-2"></a>presdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, pa <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</span>
-<span id="cb104-3"><a href="training-and-testing-data.html#cb104-3"></a>group &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">kfold</span>(presdat, <span class="dt">k =</span> <span class="dv">5</span>)  <span class="co"># 5 groups = 20 test/80 train split</span></span></code></pre></div>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="training-and-testing-data.html#cb105-1"></a><span class="kw">set.seed</span>(<span class="dv">10</span>)</span>
+<span id="cb105-2"><a href="training-and-testing-data.html#cb105-2"></a>presdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, pa <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb105-3"><a href="training-and-testing-data.html#cb105-3"></a>group &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">kfold</span>(presdat, <span class="dt">k =</span> <span class="dv">5</span>)  <span class="co"># 5 groups = 20 test/80 train split</span></span></code></pre></div>
 <p>The testing data will be <code>group==1</code> and training data will be the rest.</p>
-<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="training-and-testing-data.html#cb105-1"></a>pres_train &lt;-<span class="st"> </span>presdat[group <span class="op">!=</span><span class="st"> </span><span class="dv">1</span>, ]</span>
-<span id="cb105-2"><a href="training-and-testing-data.html#cb105-2"></a>pres_test &lt;-<span class="st"> </span>presdat[group <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</span></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="training-and-testing-data.html#cb106-1"></a>pres_train &lt;-<span class="st"> </span>presdat[group <span class="op">!=</span><span class="st"> </span><span class="dv">1</span>, ]</span>
+<span id="cb106-2"><a href="training-and-testing-data.html#cb106-2"></a>pres_test &lt;-<span class="st"> </span>presdat[group <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</span></code></pre></div>
 </div>
 <div id="background-traintest" class="section level2">
 <h2><span class="header-section-number">7.2</span> Background train/test</h2>
 <p>We repeat the process above for the background data (the <code>pa=0</code>).</p>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="training-and-testing-data.html#cb106-1"></a>bgdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, pa <span class="op">==</span><span class="st"> </span><span class="dv">0</span>)</span>
-<span id="cb106-2"><a href="training-and-testing-data.html#cb106-2"></a>group &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">kfold</span>(bgdat, <span class="dt">k =</span> <span class="dv">5</span>)</span>
-<span id="cb106-3"><a href="training-and-testing-data.html#cb106-3"></a>backg_train &lt;-<span class="st"> </span>bgdat[group <span class="op">!=</span><span class="st"> </span><span class="dv">1</span>, ]</span>
-<span id="cb106-4"><a href="training-and-testing-data.html#cb106-4"></a>backg_test &lt;-<span class="st"> </span>bgdat[group <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="training-and-testing-data.html#cb107-1"></a>bgdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, pa <span class="op">==</span><span class="st"> </span><span class="dv">0</span>)</span>
+<span id="cb107-2"><a href="training-and-testing-data.html#cb107-2"></a>group &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">kfold</span>(bgdat, <span class="dt">k =</span> <span class="dv">5</span>)</span>
+<span id="cb107-3"><a href="training-and-testing-data.html#cb107-3"></a>backg_train &lt;-<span class="st"> </span>bgdat[group <span class="op">!=</span><span class="st"> </span><span class="dv">1</span>, ]</span>
+<span id="cb107-4"><a href="training-and-testing-data.html#cb107-4"></a>backg_test &lt;-<span class="st"> </span>bgdat[group <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</span></code></pre></div>
 </div>
 <div id="training-data" class="section level2">
 <h2><span class="header-section-number">7.3</span> Training data</h2>
 <p>We make separate presence and background train/test sets for evaluation purposes later. But for fitting we need a data frame with both train data sets (presence and background) together.</p>
-<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="training-and-testing-data.html#cb107-1"></a>traindat &lt;-<span class="st"> </span><span class="kw">rbind</span>(pres_train, backg_train)</span></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="training-and-testing-data.html#cb108-1"></a>traindat &lt;-<span class="st"> </span><span class="kw">rbind</span>(pres_train, backg_train)</span></code></pre></div>
 </div>
 <div id="create-many-datasets" class="section level2">
 <h2><span class="header-section-number">7.4</span> Create many datasets</h2>
 <p>The above code would create just one dataset, but we want to create many since we want to see how/if the model changes with a different training set.</p>
 <p>I’ll create a list and save the data there. I will run through the code above and assign my train/test datasets to a list. I need to save <code>traindat</code> used in the model fitting and <code>pres_test</code> and <code>backg_test</code> used in the evaluation functions. Note, this is incredibly memory inefficient. I really just need to store <code>dat.und</code> and <code>group</code>, but for convenience sake, I am pre-making whole datasets and storing those. If the dataset were larger, I could not do this.</p>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="training-and-testing-data.html#cb108-1"></a>traindatlist &lt;-<span class="st"> </span><span class="kw">list</span>()</span>
-<span id="cb108-2"><a href="training-and-testing-data.html#cb108-2"></a>n &lt;-<span class="st"> </span><span class="dv">20</span></span>
-<span id="cb108-3"><a href="training-and-testing-data.html#cb108-3"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>n) {</span>
-<span id="cb108-4"><a href="training-and-testing-data.html#cb108-4"></a>    presdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, pa <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</span>
-<span id="cb108-5"><a href="training-and-testing-data.html#cb108-5"></a>    group &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">kfold</span>(presdat, <span class="dt">k =</span> <span class="dv">5</span>)  <span class="co"># 5 groups = 20 test/80 train split</span></span>
-<span id="cb108-6"><a href="training-and-testing-data.html#cb108-6"></a>    pres_train &lt;-<span class="st"> </span>presdat[group <span class="op">!=</span><span class="st"> </span><span class="dv">1</span>, ]</span>
-<span id="cb108-7"><a href="training-and-testing-data.html#cb108-7"></a>    pres_test &lt;-<span class="st"> </span>presdat[group <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</span>
-<span id="cb108-8"><a href="training-and-testing-data.html#cb108-8"></a>    bgdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, pa <span class="op">==</span><span class="st"> </span><span class="dv">0</span>)</span>
-<span id="cb108-9"><a href="training-and-testing-data.html#cb108-9"></a>    group &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">kfold</span>(bgdat, <span class="dt">k =</span> <span class="dv">5</span>)</span>
-<span id="cb108-10"><a href="training-and-testing-data.html#cb108-10"></a>    backg_train &lt;-<span class="st"> </span>bgdat[group <span class="op">!=</span><span class="st"> </span><span class="dv">1</span>, ]</span>
-<span id="cb108-11"><a href="training-and-testing-data.html#cb108-11"></a>    backg_test &lt;-<span class="st"> </span>bgdat[group <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</span>
-<span id="cb108-12"><a href="training-and-testing-data.html#cb108-12"></a>    traindatlist[[i]] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">traindat =</span> <span class="kw">rbind</span>(pres_train, backg_train), </span>
-<span id="cb108-13"><a href="training-and-testing-data.html#cb108-13"></a>        <span class="dt">pres_test =</span> pres_test, <span class="dt">backg_test =</span> backg_test)</span>
-<span id="cb108-14"><a href="training-and-testing-data.html#cb108-14"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="training-and-testing-data.html#cb109-1"></a>traindatlist &lt;-<span class="st"> </span><span class="kw">list</span>()</span>
+<span id="cb109-2"><a href="training-and-testing-data.html#cb109-2"></a>n &lt;-<span class="st"> </span><span class="dv">20</span></span>
+<span id="cb109-3"><a href="training-and-testing-data.html#cb109-3"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>n) {</span>
+<span id="cb109-4"><a href="training-and-testing-data.html#cb109-4"></a>    presdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, pa <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb109-5"><a href="training-and-testing-data.html#cb109-5"></a>    group &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">kfold</span>(presdat, <span class="dt">k =</span> <span class="dv">5</span>)  <span class="co"># 5 groups = 20 test/80 train split</span></span>
+<span id="cb109-6"><a href="training-and-testing-data.html#cb109-6"></a>    pres_train &lt;-<span class="st"> </span>presdat[group <span class="op">!=</span><span class="st"> </span><span class="dv">1</span>, ]</span>
+<span id="cb109-7"><a href="training-and-testing-data.html#cb109-7"></a>    pres_test &lt;-<span class="st"> </span>presdat[group <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</span>
+<span id="cb109-8"><a href="training-and-testing-data.html#cb109-8"></a>    bgdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, pa <span class="op">==</span><span class="st"> </span><span class="dv">0</span>)</span>
+<span id="cb109-9"><a href="training-and-testing-data.html#cb109-9"></a>    group &lt;-<span class="st"> </span>dismo<span class="op">::</span><span class="kw">kfold</span>(bgdat, <span class="dt">k =</span> <span class="dv">5</span>)</span>
+<span id="cb109-10"><a href="training-and-testing-data.html#cb109-10"></a>    backg_train &lt;-<span class="st"> </span>bgdat[group <span class="op">!=</span><span class="st"> </span><span class="dv">1</span>, ]</span>
+<span id="cb109-11"><a href="training-and-testing-data.html#cb109-11"></a>    backg_test &lt;-<span class="st"> </span>bgdat[group <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</span>
+<span id="cb109-12"><a href="training-and-testing-data.html#cb109-12"></a>    traindatlist[[i]] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">traindat =</span> <span class="kw">rbind</span>(pres_train, backg_train), </span>
+<span id="cb109-13"><a href="training-and-testing-data.html#cb109-13"></a>        <span class="dt">pres_test =</span> pres_test, <span class="dt">backg_test =</span> backg_test)</span>
+<span id="cb109-14"><a href="training-and-testing-data.html#cb109-14"></a>}</span></code></pre></div>
 </div>
 <div id="save" class="section level2">
 <h2><span class="header-section-number">7.5</span> Save</h2>
 <p>I’ll add this to the <code>sdm_data</code> data file.</p>
-<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="training-and-testing-data.html#cb109-1"></a><span class="kw">save</span>(traindatlist, <span class="dt">list =</span> datnames, <span class="dt">file =</span> <span class="st">&quot;data/sdm_data.RData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="training-and-testing-data.html#cb110-1"></a><span class="kw">save</span>(traindatlist, <span class="dt">list =</span> datnames, <span class="dt">file =</span> <span class="st">&quot;data/sdm_data.RData&quot;</span>)</span></code></pre></div>
 
 </div>
 </div>

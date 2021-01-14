@@ -24,7 +24,7 @@
 <meta name="author" content="E. E. Holmes" />
 
 
-<meta name="date" content="2020-08-05" />
+<meta name="date" content="2020-10-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -235,67 +235,67 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 6</span> Variable Correlation</h1>
 <p>Including variables that are highly correlated is a big problem when doing regression analyses. You will get pairs of highly positive and negative effect size estimates and huge standard errors on your estimates. So we need to evaluate correlation and select a set of variables that is not terribly correlated.</p>
 <p>This example will use the following libraries.</p>
-<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="variable-correlation.html#cb88-1"></a><span class="kw">library</span>(corrplot)</span>
-<span id="cb88-2"><a href="variable-correlation.html#cb88-2"></a><span class="kw">library</span>(usdm)</span>
-<span id="cb88-3"><a href="variable-correlation.html#cb88-3"></a><span class="kw">library</span>(stringr)</span>
-<span id="cb88-4"><a href="variable-correlation.html#cb88-4"></a><span class="kw">library</span>(raster)</span></code></pre></div>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="variable-correlation.html#cb89-1"></a><span class="kw">library</span>(corrplot)</span>
+<span id="cb89-2"><a href="variable-correlation.html#cb89-2"></a><span class="kw">library</span>(usdm)</span>
+<span id="cb89-3"><a href="variable-correlation.html#cb89-3"></a><span class="kw">library</span>(stringr)</span>
+<span id="cb89-4"><a href="variable-correlation.html#cb89-4"></a><span class="kw">library</span>(raster)</span></code></pre></div>
 <div id="set-up" class="section level2">
 <h2><span class="header-section-number">6.1</span> Set-up</h2>
 <p>Load the data for the SDMs prepared in earlier chapters. This loads <code>dat.und</code> with the climate data for each cell with presences of <em>Trillium undulatum</em> plus the background cells.</p>
-<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="variable-correlation.html#cb89-1"></a><span class="kw">load</span>(<span class="st">&quot;data/sdm_data.RData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="variable-correlation.html#cb90-1"></a><span class="kw">load</span>(<span class="st">&quot;data/sdm_data.RData&quot;</span>)</span></code></pre></div>
 <p>There are a few covariates that I know I don’t want. Specifically, the wet and dry qtr variables because that is summer in some cells and winter in others. Also I’ll exclude Snow since that is all 0 and Barren since that is almost all 0. And I’ll exclude <code>cells</code> and <code>species</code> since I don’t use those ever. Finally, dominant land cover is a categorical variable so I will exclude that (to make my life easier).</p>
-<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="variable-correlation.html#cb90-1"></a>dat.und &lt;-<span class="st"> </span>dat.und[, <span class="op">!</span>stringr<span class="op">::</span><span class="kw">str_detect</span>(<span class="kw">colnames</span>(dat.und), </span>
-<span id="cb90-2"><a href="variable-correlation.html#cb90-2"></a>    <span class="st">&quot;[.]wet[.]&quot;</span>)]</span>
-<span id="cb90-3"><a href="variable-correlation.html#cb90-3"></a>dat.und &lt;-<span class="st"> </span>dat.und[, <span class="op">!</span>stringr<span class="op">::</span><span class="kw">str_detect</span>(<span class="kw">colnames</span>(dat.und), </span>
-<span id="cb90-4"><a href="variable-correlation.html#cb90-4"></a>    <span class="st">&quot;[.]dry[.]&quot;</span>)]</span>
-<span id="cb90-5"><a href="variable-correlation.html#cb90-5"></a>dat.und &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, <span class="dt">select =</span> <span class="kw">c</span>(<span class="op">-</span>cells, <span class="op">-</span>species, <span class="op">-</span>Dominant.Land.Cover, </span>
-<span id="cb90-6"><a href="variable-correlation.html#cb90-6"></a>    <span class="op">-</span>Snow, <span class="op">-</span>Barren))</span></code></pre></div>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="variable-correlation.html#cb91-1"></a>dat.und &lt;-<span class="st"> </span>dat.und[, <span class="op">!</span>stringr<span class="op">::</span><span class="kw">str_detect</span>(<span class="kw">colnames</span>(dat.und), </span>
+<span id="cb91-2"><a href="variable-correlation.html#cb91-2"></a>    <span class="st">&quot;[.]wet[.]&quot;</span>)]</span>
+<span id="cb91-3"><a href="variable-correlation.html#cb91-3"></a>dat.und &lt;-<span class="st"> </span>dat.und[, <span class="op">!</span>stringr<span class="op">::</span><span class="kw">str_detect</span>(<span class="kw">colnames</span>(dat.und), </span>
+<span id="cb91-4"><a href="variable-correlation.html#cb91-4"></a>    <span class="st">&quot;[.]dry[.]&quot;</span>)]</span>
+<span id="cb91-5"><a href="variable-correlation.html#cb91-5"></a>dat.und &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, <span class="dt">select =</span> <span class="kw">c</span>(<span class="op">-</span>cells, <span class="op">-</span>species, <span class="op">-</span>Dominant.Land.Cover, </span>
+<span id="cb91-6"><a href="variable-correlation.html#cb91-6"></a>    <span class="op">-</span>Snow, <span class="op">-</span>Barren))</span></code></pre></div>
 </div>
 <div id="variable-correlation-1" class="section level2">
 <h2><span class="header-section-number">6.2</span> Variable correlation</h2>
 <p>First I will use the corrplot package to look at correlation visually.</p>
-<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="variable-correlation.html#cb91-1"></a>tmpdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, <span class="dt">select =</span> stringr<span class="op">::</span><span class="kw">str_detect</span>(<span class="kw">colnames</span>(dat.und), </span>
-<span id="cb91-2"><a href="variable-correlation.html#cb91-2"></a>    <span class="st">&quot;precip&quot;</span>))</span>
-<span id="cb91-3"><a href="variable-correlation.html#cb91-3"></a>varCor &lt;-<span class="st"> </span><span class="kw">cor</span>(tmpdat, <span class="dt">use =</span> <span class="st">&quot;na.or.complete&quot;</span>)</span>
-<span id="cb91-4"><a href="variable-correlation.html#cb91-4"></a>corrplot<span class="op">::</span><span class="kw">corrplot</span>(varCor)</span></code></pre></div>
-<p><img src="sdm-demo_files/figure-html/unnamed-chunk-75-1.png" width="80%" style="display: block; margin: auto;" /></p>
-<p>Many of the temperature variables are very correlated.</p>
 <div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="variable-correlation.html#cb92-1"></a>tmpdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, <span class="dt">select =</span> stringr<span class="op">::</span><span class="kw">str_detect</span>(<span class="kw">colnames</span>(dat.und), </span>
-<span id="cb92-2"><a href="variable-correlation.html#cb92-2"></a>    <span class="st">&quot;temp&quot;</span>))</span>
+<span id="cb92-2"><a href="variable-correlation.html#cb92-2"></a>    <span class="st">&quot;precip&quot;</span>))</span>
 <span id="cb92-3"><a href="variable-correlation.html#cb92-3"></a>varCor &lt;-<span class="st"> </span><span class="kw">cor</span>(tmpdat, <span class="dt">use =</span> <span class="st">&quot;na.or.complete&quot;</span>)</span>
 <span id="cb92-4"><a href="variable-correlation.html#cb92-4"></a>corrplot<span class="op">::</span><span class="kw">corrplot</span>(varCor)</span></code></pre></div>
+<p><img src="sdm-demo_files/figure-html/unnamed-chunk-75-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>Many of the temperature variables are very correlated.</p>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="variable-correlation.html#cb93-1"></a>tmpdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat.und, <span class="dt">select =</span> stringr<span class="op">::</span><span class="kw">str_detect</span>(<span class="kw">colnames</span>(dat.und), </span>
+<span id="cb93-2"><a href="variable-correlation.html#cb93-2"></a>    <span class="st">&quot;temp&quot;</span>))</span>
+<span id="cb93-3"><a href="variable-correlation.html#cb93-3"></a>varCor &lt;-<span class="st"> </span><span class="kw">cor</span>(tmpdat, <span class="dt">use =</span> <span class="st">&quot;na.or.complete&quot;</span>)</span>
+<span id="cb93-4"><a href="variable-correlation.html#cb93-4"></a>corrplot<span class="op">::</span><span class="kw">corrplot</span>(varCor)</span></code></pre></div>
 <p><img src="sdm-demo_files/figure-html/unnamed-chunk-76-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>After exploring the models, I came up with the following set of not too correlated variables that still explain much of the variability in presence/absence. This set was selected by 1) considering what factors might influence a long-lived wildflower, 2) looking at the correlation plots, and 3) fitting different GAM models and looking at the effects curves for evidence of collinearity problems. The latter can be seen with curves that are mirrors of each other with high uncertainty (a hallmark of collinearity problems). But below I will also try variance inflation to select a set of non-collinear variables.</p>
-<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="variable-correlation.html#cb93-1"></a>envvars &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;mean.temp&quot;</span>, <span class="st">&quot;temp.diurnal.range&quot;</span>, <span class="st">&quot;temp.seasonality&quot;</span>, </span>
-<span id="cb93-2"><a href="variable-correlation.html#cb93-2"></a>    <span class="st">&quot;precip.warm.qtr&quot;</span>, <span class="st">&quot;precip.cold.qtr&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="variable-correlation.html#cb94-1"></a>envvars &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;mean.temp&quot;</span>, <span class="st">&quot;temp.diurnal.range&quot;</span>, <span class="st">&quot;temp.seasonality&quot;</span>, </span>
+<span id="cb94-2"><a href="variable-correlation.html#cb94-2"></a>    <span class="st">&quot;precip.warm.qtr&quot;</span>, <span class="st">&quot;precip.cold.qtr&quot;</span>)</span></code></pre></div>
 <p>That gets me a set of variables that are not so horribly correlated.</p>
-<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="variable-correlation.html#cb94-1"></a>tmpdat &lt;-<span class="st"> </span>dat.und[, envvars]</span>
-<span id="cb94-2"><a href="variable-correlation.html#cb94-2"></a>varCor &lt;-<span class="st"> </span><span class="kw">cor</span>(tmpdat, <span class="dt">use =</span> <span class="st">&quot;na.or.complete&quot;</span>)</span>
-<span id="cb94-3"><a href="variable-correlation.html#cb94-3"></a>corrplot<span class="op">::</span><span class="kw">corrplot</span>(varCor)</span></code></pre></div>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="variable-correlation.html#cb95-1"></a>tmpdat &lt;-<span class="st"> </span>dat.und[, envvars]</span>
+<span id="cb95-2"><a href="variable-correlation.html#cb95-2"></a>varCor &lt;-<span class="st"> </span><span class="kw">cor</span>(tmpdat, <span class="dt">use =</span> <span class="st">&quot;na.or.complete&quot;</span>)</span>
+<span id="cb95-3"><a href="variable-correlation.html#cb95-3"></a>corrplot<span class="op">::</span><span class="kw">corrplot</span>(varCor)</span></code></pre></div>
 <p><img src="sdm-demo_files/figure-html/unnamed-chunk-78-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>And the variance inflation factors look ok.</p>
-<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="variable-correlation.html#cb95-1"></a>usdm<span class="op">::</span><span class="kw">vif</span>(tmpdat)</span></code></pre></div>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="variable-correlation.html#cb96-1"></a>usdm<span class="op">::</span><span class="kw">vif</span>(tmpdat)</span></code></pre></div>
 <pre><code>           Variables      VIF
-1          mean.temp 5.054060
-2 temp.diurnal.range 1.549711
-3   temp.seasonality 3.728431
-4    precip.warm.qtr 5.551649
-5    precip.cold.qtr 3.449468</code></pre>
-<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="variable-correlation.html#cb97-1"></a><span class="kw">plot</span>(allVars[[envvars]])</span></code></pre></div>
+1          mean.temp 5.210197
+2 temp.diurnal.range 1.500477
+3   temp.seasonality 4.032876
+4    precip.warm.qtr 5.607584
+5    precip.cold.qtr 3.739644</code></pre>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="variable-correlation.html#cb98-1"></a><span class="kw">plot</span>(allVars[[envvars]])</span></code></pre></div>
 <p><img src="sdm-demo_files/figure-html/unnamed-chunk-80-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="variance-inflation-factor" class="section level2">
 <h2><span class="header-section-number">6.3</span> Variance Inflation Factor</h2>
 <p>As an experiment, I will use variable inflation to select a set of non-correlated variables. This doesn’t try to use any biological reasoning about limiting factors for Trillium. It is just a statistical method to chose a set of uncorrelated variables.</p>
-<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="variable-correlation.html#cb98-1"></a>vifres &lt;-<span class="st"> </span>usdm<span class="op">::</span><span class="kw">vifstep</span>(<span class="kw">subset</span>(dat.und, <span class="dt">select =</span> <span class="kw">c</span>(<span class="op">-</span>pa, <span class="op">-</span>lon, </span>
-<span id="cb98-2"><a href="variable-correlation.html#cb98-2"></a>    <span class="op">-</span>lat)))</span>
-<span id="cb98-3"><a href="variable-correlation.html#cb98-3"></a>vifvars &lt;-<span class="st"> </span><span class="kw">as.character</span>(vifres<span class="op">@</span>results<span class="op">$</span>Variables)</span>
-<span id="cb98-4"><a href="variable-correlation.html#cb98-4"></a>vifvars</span></code></pre></div>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="variable-correlation.html#cb99-1"></a>vifres &lt;-<span class="st"> </span>usdm<span class="op">::</span><span class="kw">vifstep</span>(<span class="kw">subset</span>(dat.und, <span class="dt">select =</span> <span class="kw">c</span>(<span class="op">-</span>pa, <span class="op">-</span>lon, </span>
+<span id="cb99-2"><a href="variable-correlation.html#cb99-2"></a>    <span class="op">-</span>lat)))</span>
+<span id="cb99-3"><a href="variable-correlation.html#cb99-3"></a>vifvars &lt;-<span class="st"> </span><span class="kw">as.character</span>(vifres<span class="op">@</span>results<span class="op">$</span>Variables)</span>
+<span id="cb99-4"><a href="variable-correlation.html#cb99-4"></a>vifvars</span></code></pre></div>
 <pre><code> [1] &quot;temp.diurnal.range&quot;        &quot;temp.seasonality&quot;         
  [3] &quot;mean.temp.warm.qtr&quot;        &quot;precip.seasonality&quot;       
  [5] &quot;precip.warm.qtr&quot;           &quot;precip.cold.qtr&quot;          
  [7] &quot;slope&quot;                     &quot;aspect&quot;                   
- [9] &quot;Evergreen.Broadleaf.Trees&quot; &quot;Mixed.Other.Trees&quot;        
+ [9] &quot;Evergreen.Broadleaf.Trees&quot; &quot;Deciduous.Broadleaf.Trees&quot;
 [11] &quot;Shrubs&quot;                    &quot;Herbaceous&quot;               
 [13] &quot;Cultivated&quot;                &quot;Flooded&quot;                  
 [15] &quot;Urban&quot;                     &quot;Water&quot;                    </code></pre>
@@ -303,15 +303,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="save" class="section level2">
 <h2><span class="header-section-number">6.4</span> Save</h2>
 <p>I’ll test models with all variables and these subsets.</p>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="variable-correlation.html#cb100-1"></a>topovars &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;elevation&quot;</span>, <span class="st">&quot;slope&quot;</span>, <span class="st">&quot;aspect&quot;</span>)</span>
-<span id="cb100-2"><a href="variable-correlation.html#cb100-2"></a>lcvars &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Tree.Cover&quot;</span>, <span class="st">&quot;mean.temp&quot;</span>, <span class="st">&quot;precip.warm.qtr&quot;</span>)</span>
-<span id="cb100-3"><a href="variable-correlation.html#cb100-3"></a>envvars &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;mean.temp&quot;</span>, <span class="st">&quot;temp.diurnal.range&quot;</span>, <span class="st">&quot;temp.seasonality&quot;</span>, </span>
-<span id="cb100-4"><a href="variable-correlation.html#cb100-4"></a>    <span class="st">&quot;precip.warm.qtr&quot;</span>, <span class="st">&quot;precip.cold.qtr&quot;</span>)</span>
-<span id="cb100-5"><a href="variable-correlation.html#cb100-5"></a>minEnvVars &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;precip.warm.qtr&quot;</span>, <span class="st">&quot;mean.temp&quot;</span>, <span class="st">&quot;temp.diurnal.range&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="variable-correlation.html#cb101-1"></a>topovars &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;elevation&quot;</span>, <span class="st">&quot;slope&quot;</span>, <span class="st">&quot;aspect&quot;</span>)</span>
+<span id="cb101-2"><a href="variable-correlation.html#cb101-2"></a>lcvars &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Tree.Cover&quot;</span>, <span class="st">&quot;mean.temp&quot;</span>, <span class="st">&quot;precip.warm.qtr&quot;</span>)</span>
+<span id="cb101-3"><a href="variable-correlation.html#cb101-3"></a>envvars &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;mean.temp&quot;</span>, <span class="st">&quot;temp.diurnal.range&quot;</span>, <span class="st">&quot;temp.seasonality&quot;</span>, </span>
+<span id="cb101-4"><a href="variable-correlation.html#cb101-4"></a>    <span class="st">&quot;precip.warm.qtr&quot;</span>, <span class="st">&quot;precip.cold.qtr&quot;</span>)</span>
+<span id="cb101-5"><a href="variable-correlation.html#cb101-5"></a>minEnvVars &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;precip.warm.qtr&quot;</span>, <span class="st">&quot;mean.temp&quot;</span>, <span class="st">&quot;temp.diurnal.range&quot;</span>)</span></code></pre></div>
 <p>I’ll save because I’ll be using these variables across different SDM chapters. This code loads in my existing <code>sdm_data</code> file, records what objects are there (<code>tmp</code> is a character vector of objects in <code>sdm_data</code>), and then resaves with the original objects plus the ones I want to add.</p>
-<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="variable-correlation.html#cb101-1"></a>tmp &lt;-<span class="st"> </span><span class="kw">load</span>(<span class="st">&quot;data/sdm_data.RData&quot;</span>)</span>
-<span id="cb101-2"><a href="variable-correlation.html#cb101-2"></a><span class="kw">save</span>(topovars, lcvars, envvars, minEnvVars, vifvars, <span class="dt">list =</span> tmp, </span>
-<span id="cb101-3"><a href="variable-correlation.html#cb101-3"></a>    <span class="dt">file =</span> <span class="st">&quot;data/sdm_data.RData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="variable-correlation.html#cb102-1"></a>tmp &lt;-<span class="st"> </span><span class="kw">load</span>(<span class="st">&quot;data/sdm_data.RData&quot;</span>)</span>
+<span id="cb102-2"><a href="variable-correlation.html#cb102-2"></a><span class="kw">save</span>(topovars, lcvars, envvars, minEnvVars, vifvars, <span class="dt">list =</span> tmp, </span>
+<span id="cb102-3"><a href="variable-correlation.html#cb102-3"></a>    <span class="dt">file =</span> <span class="st">&quot;data/sdm_data.RData&quot;</span>)</span></code></pre></div>
 
 </div>
 </div>
